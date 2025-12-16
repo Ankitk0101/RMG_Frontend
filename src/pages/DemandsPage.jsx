@@ -37,9 +37,6 @@ const DemandsPage = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Demands</h1>
         <div className="flex gap-4">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Add New Demand
-          </button>
           <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
             Filter
           </button>
