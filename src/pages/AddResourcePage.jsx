@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import AddResourceForm from '../components/Forms/AddResourceForm';
+import  {addResources } from '../services/resourceApi'
+
+
 
 // Empty form data structure
 const emptyFormData = {
@@ -62,6 +65,12 @@ const emptyFormData = {
     leadName: "",
     leadContact: "",
     experienceLevel: ""
+  },
+  // Add file uploads section
+  fileUploads: {
+    paymentConfirmationFile: null,
+    supportingDocuments: [],
+    uploadNotes: ""
   }
 };
 
@@ -149,9 +158,6 @@ const AddResourcePage = () => {
     if (!formData.demandInterviewDetails.modeOfInterview) {
       newErrors.modeOfInterview = 'Interview Mode is required';
     }
-    if (!formData.demandInterviewDetails.budgetStatus) {
-      newErrors.budgetStatus = 'Budget Status is required';
-    }
     if (!formData.demandInterviewDetails.techProfile) {
       newErrors.techProfile = 'Technical Profile is required';
     }
@@ -171,7 +177,14 @@ const AddResourcePage = () => {
       newErrors.resourceStatus = 'Resource Status is required';
     }
     
-    setErrors(newErrors);
+    // Special validation for L2 Payment Confirmation
+    if (formData.demandInterviewDetails.paymentConfirmation === 'L2') {
+      if (!formData.fileUploads?.paymentConfirmationFile) {
+        newErrors.paymentConfirmationFile = 'Payment confirmation document is required for L2';
+      }
+    }
+    
+    setErrors(newErrors)
     return Object.keys(newErrors).length === 0;
   };
 
@@ -179,18 +192,31 @@ const AddResourcePage = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      alert('Please fix validation errors before submitting');
+      console.log("array for errro",Object.keys(errors))
+      let errorarray=Object.keys(errors)
+      console.log(errorarray)
+     alert(`fill this field - ${errorarray[0]}`);
+      console.log(errorarray[0]);
       return;
     }
     
     setIsSubmitting(true);
-    
     try {
-      // API call would go here
-      console.log('Submitting form data:', formData);
+      // Prepare form data for API submission
+      const submitData = {
+        ...formData,
+        // Convert files to base64 or prepare for upload
+        fileUploads: {
+          ...formData.fileUploads,
+          hasFiles: formData.fileUploads.paymentConfirmationFile !== null || 
+                   formData.fileUploads.supportingDocuments.length > 0
+        }
+      };
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Submitting form data:', submitData);
+      
+      // submiting data to API call
+       addResources(formData)
       
       alert('Resource added successfully!');
       
@@ -214,7 +240,7 @@ const AddResourcePage = () => {
       }
     }));
     
-    // Clear error for this field when user starts typing
+   
     if (errors[field]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -224,42 +250,18 @@ const AddResourcePage = () => {
     }
   };
 
-  const handleSaveDraft = () => {
-    // Filter out empty values before saving draft
-    const draftData = {
-      ...formData,
-      resourceDemandInfo: Object.fromEntries(
-        Object.entries(formData.resourceDemandInfo).filter(([_, value]) => value !== "")
-      ),
-      contractDetails: Object.fromEntries(
-        Object.entries(formData.contractDetails).filter(([_, value]) => value !== "")
-      ),
-      demandJobDetails: Object.fromEntries(
-        Object.entries(formData.demandJobDetails).filter(([_, value]) => value !== "")
-      ),
-      demandDurationInfo: Object.fromEntries(
-        Object.entries(formData.demandDurationInfo).filter(([_, value]) => value !== "")
-      ),
-      demandBudgetInfo: Object.fromEntries(
-        Object.entries(formData.demandBudgetInfo).filter(([_, value]) => value !== "")
-      ),
-      demandInterviewDetails: Object.fromEntries(
-        Object.entries(formData.demandInterviewDetails).filter(([_, value]) => value !== "")
-      ),
-      companyDetails: Object.fromEntries(
-        Object.entries(formData.companyDetails).filter(([_, value]) => value !== "")
-      ),
-      clientDetails: Object.fromEntries(
-        Object.entries(formData.clientDetails).filter(([_, value]) => value !== "")
-      ),
-    };
-    
-    console.log('Draft saved:', draftData);
-    alert('Draft saved successfully!');
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('resourceDraft', JSON.stringify(draftData));
+  // Special handler for file uploads
+  const handleFileUpload = (field, files) => {
+    setFormData(prev => ({
+      ...prev,
+      fileUploads: {
+        ...prev.fileUploads,
+        [field]: files
+      }
+    }));
   };
+
+ 
 
   const handleResetForm = () => {
     if (window.confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
@@ -278,12 +280,6 @@ const AddResourcePage = () => {
         </div>
         <div className="flex gap-3">
           <button 
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            onClick={handleSaveDraft}
-          >
-            Save Draft
-          </button>
-          <button 
             className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
             onClick={handleResetForm}
           >
@@ -299,12 +295,13 @@ const AddResourcePage = () => {
         </div>
       </div>
 
-      
+     
       
       <AddResourceForm 
         formData={formData}
         errors={errors}
         onInputChange={handleInputChange}
+        onFileUpload={handleFileUpload}
       />
     </div>
   );

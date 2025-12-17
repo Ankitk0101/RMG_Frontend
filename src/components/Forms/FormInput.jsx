@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, AlertCircle } from 'lucide-react';
+import { HelpCircle, AlertCircle, Upload, X } from 'lucide-react';
 
 const FormInput = ({ 
   label, 
@@ -21,10 +21,15 @@ const FormInput = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleChange = (e) => {
     let newValue;
-    if (type === 'checkbox') {
+    if (type === 'file') {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+      newValue = files;
+    } else if (type === 'checkbox') {
       newValue = e.target.checked;
     } else if (type === 'number') {
       newValue = e.target.value === '' ? '' : parseFloat(e.target.value);
@@ -35,6 +40,15 @@ const FormInput = ({
     setIsTouched(true);
     if (onChange) {
       onChange(newValue);
+    }
+  };
+
+  const handleRemoveFile = (index) => {
+    const newFiles = [...selectedFiles];
+    newFiles.splice(index, 1);
+    setSelectedFiles(newFiles);
+    if (onChange) {
+      onChange(newFiles);
     }
   };
 
@@ -134,6 +148,64 @@ const FormInput = ({
             pattern={pattern}
             required={required}
           />
+        );
+      
+      case 'file':
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-center w-full">
+              <label htmlFor={`file-upload-${field}`} className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                  <p className="mb-2 text-sm text-gray-500">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500">PDF, DOC, JPG, PNG up to 10MB</p>
+                </div>
+                <input
+                  id={`file-upload-${field}`}
+                  type="file"
+                  className="hidden"
+                  onChange={handleChange}
+                  multiple={props.multiple}
+                  accept={props.accept || "*"}
+                  required={required}
+                />
+              </label>
+            </div>
+            
+            {selectedFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Selected files:</p>
+                {selectedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                        <span className="text-xs font-medium text-blue-800">
+                          {file.name.split('.').pop().toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 truncate max-w-xs">
+                          {file.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         );
       
       default:

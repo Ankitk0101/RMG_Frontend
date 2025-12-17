@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FormInput from './FormInput';
 
 const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} }) => {
+  const [uploadedFiles, setUploadedFiles] = useState({});
+  
+  // Check if L2 is selected for file upload condition
+  const showFileUpload = formData.demandInterviewDetails?.paymentConfirmation === 'L2';
+
+  const handleFileUpload = (field, files) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [field]: files
+    }));
+  };
+
   const sections = [
     {
       title: 'Resource Demand Information',
@@ -9,7 +21,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Demand Category*', 
+            label: 'Demand Category', 
             type: 'select',
             field: 'demandCategory',
             value: formData.resourceDemandInfo?.demandCategory || '',
@@ -18,7 +30,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'No. of resources needed*', 
+            label: 'No. of resources needed', 
             type: 'number',
             field: 'noOfResource',
             value: formData.resourceDemandInfo?.noOfResource || '',
@@ -29,7 +41,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Demand Technology*', 
+            label: 'Demand Technology', 
             type: 'select',
             field: 'demandTechnologyName',
             value: formData.resourceDemandInfo?.demandTechnologyName || '',
@@ -37,10 +49,11 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             options: ['', 'Node.js', 'React', 'Python', 'Java', '.NET', 'Angular', 'Vue.js', 'PHP', 'Ruby', 'Go', 'Swift', 'Kotlin', 'Flutter', 'React Native'],
             required: true
           },
+          
         ],
         [
           { 
-            label: 'Demand Level*', 
+            label: 'Demand Level', 
             type: 'select',
             field: 'demandLevel',
             value: formData.resourceDemandInfo?.demandLevel || '',
@@ -48,8 +61,9 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             options: ['', 'Junior (0-2 years)', 'Mid (2-5 years)', 'Senior (5-8 years)', 'Lead (8+ years)', 'Architect (10+ years)'],
             required: true
           },
+         
           { 
-            label: 'Engagement*', 
+            label: 'Engagement', 
             type: 'select',
             field: 'engagement',
             value: formData.resourceDemandInfo?.engagement || '',
@@ -57,8 +71,16 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             options: ['', 'Full Time', 'Part Time', 'Contract', 'Freelance', 'Internship'],
             required: true
           },
+           { 
+            label: 'Demand Sub-Technology', 
+            type: 'select',
+            field: 'demandSubTechnologyName',
+            value: formData.resourceDemandInfo?.demandSubTechnologyName || '',
+            options: ['', 'Express.js', 'NestJS', 'Next.js', 'Django', 'Spring Boot', 'Laravel', 'Rails', 'ASP.NET', 'Flask', 'FastAPI'],
+            placeholder: 'Select sub-technology if applicable'
+          },
           { 
-            label: 'Demand Type*', 
+            label: 'Demand Type', 
             type: 'select',
             field: 'demandType',
             value: formData.resourceDemandInfo?.demandType || '',
@@ -67,16 +89,6 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
         ],
-        [
-          { 
-            label: 'Demand Sub-Technology', 
-            type: 'select',
-            field: 'demandSubTechnologyName',
-            value: formData.resourceDemandInfo?.demandSubTechnologyName || '',
-            options: ['', 'Express.js', 'NestJS', 'Next.js', 'Django', 'Spring Boot', 'Laravel', 'Rails', 'ASP.NET', 'Flask', 'FastAPI'],
-            placeholder: 'Select sub-technology if applicable'
-          },
-        ]
       ]
     },
     {
@@ -85,7 +97,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Client Need*', 
+            label: 'Client Need', 
             type: 'select',
             field: 'clientNeed',
             value: formData.contractDetails?.clientNeed || '',
@@ -93,8 +105,9 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             options: ['', 'Immediate', 'Urgent (1-2 weeks)', 'Normal (2-4 weeks)', 'Future (1+ month)'],
             required: true
           },
+          
           { 
-            label: 'Working Days*', 
+            label: 'Working Days', 
             type: 'select',
             field: 'workingDays',
             value: formData.contractDetails?.workingDays || '',
@@ -103,7 +116,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Contract Type*', 
+            label: 'Contract Type', 
             type: 'select',
             field: 'contractType',
             value: formData.contractDetails?.contractType || '',
@@ -114,7 +127,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
         ],
         [
           { 
-            label: 'Working Location*', 
+            label: 'Working Location', 
             type: 'select',
             field: 'workingLocation',
             value: formData.contractDetails?.workingLocation || '',
@@ -123,7 +136,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Working Mode*', 
+            label: 'Working Mode', 
             type: 'select',
             field: 'workingMode',
             value: formData.contractDetails?.workingMode || '',
@@ -132,7 +145,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Working Timing*', 
+            label: 'Working Timing', 
             type: 'select',
             field: 'workingTiming',
             value: formData.contractDetails?.workingTiming || '',
@@ -150,7 +163,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             options: ['', 'Company', 'Client', 'Employee', 'Not Required']
           },
           { 
-            label: 'Is BGV Required*', 
+            label: 'Is BGV Required', 
             type: 'select',
             field: 'isBGVRequired',
             value: formData.contractDetails?.isBGVRequired || '',
@@ -159,7 +172,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Client BGV Verify*', 
+            label: 'Client BGV Verify', 
             type: 'select',
             field: 'clientBGV_Verify',
             value: formData.contractDetails?.clientBGV_Verify || '',
@@ -186,7 +199,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Job Description*', 
+            label: 'Job Description', 
             type: 'textarea',
             field: 'jobDescription',
             value: formData.demandJobDetails?.jobDescription || '',
@@ -204,7 +217,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Client Name*', 
+            label: 'Client Name', 
             type: 'text',
             field: 'clientName',
             value: formData.companyDetails?.clientName || '',
@@ -258,7 +271,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Billing Start Date*',
+            label: 'Billing Start Date',
             type: 'date',
             field: 'billingStartDate',
             value: formData.demandDurationInfo?.billingStartDate || '',
@@ -280,13 +293,6 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             value: formData.demandDurationInfo?.tentativeDuration || '',
             options: ['', '1 Month', '3 Months', '6 Months', '1 Year', 'Flexible', 'Project Based']
           },
-          { 
-            label: 'Unique ID',
-            type: 'text',
-            field: 'uniqueId',
-            value: formData.demandDurationInfo?.uniqueId || '',
-            placeholder: 'Auto-generated or enter custom ID'
-          },
         ],
         [
           { 
@@ -306,7 +312,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Budget Type*', 
+            label: 'Budget Type', 
             type: 'select',
             field: 'budgetType',
             value: formData.demandBudgetInfo?.budgetType || '',
@@ -315,7 +321,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Budget Currency*', 
+            label: 'Budget Currency', 
             type: 'select',
             field: 'currency',
             value: formData.demandBudgetInfo?.currency || '',
@@ -324,7 +330,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Budget*', 
+            label: 'Budget', 
             type: 'number',
             field: 'budget',
             value: formData.demandBudgetInfo?.budget || '',
@@ -378,7 +384,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
       columns: [
         [
           { 
-            label: 'Mode of Interview*',
+            label: 'Mode of Interview',
             type: 'select',
             field: 'modeOfInterview',
             value: formData.demandInterviewDetails?.modeOfInterview || '',
@@ -397,16 +403,16 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
         ],
         [
           { 
-            label: 'Budget Status*',
+            label: 'Budget Status',
             type: 'select',
             field: 'budgetStatus',
             value: formData.demandInterviewDetails?.budgetStatus || '',
             error: errors.budgetStatus,
             options: ['', 'Approved', 'Pending', 'In Review', 'Rejected', 'Negotiation'],
-            required: true
+            required: false
           },
           { 
-            label: 'Technical Profile*',
+            label: 'Technical Profile',
             type: 'text',
             field: 'techProfile',
             value: formData.demandInterviewDetails?.techProfile || '',
@@ -417,25 +423,25 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
         ],
         [
           { 
-            label: 'Contract to Hire*',
+            label: 'Contract to Hire',
             type: 'select',
             field: 'contractToHire',
             value: formData.demandInterviewDetails?.contractToHire || '',
             error: errors.contractToHire,
-            options: ['', 'Yes', 'No', 'Maybe'],
+            options: ['', 'Yes', 'No'],
             required: true
           },
           { 
-            label: 'Payment Confirmation*',
+            label: 'Payment Confirmation',
             type: 'select',
             field: 'paymentConfirmation',
             value: formData.demandInterviewDetails?.paymentConfirmation || '',
             error: errors.paymentConfirmation,
-            options: ['', 'Confirmed', 'Pending', 'Not Started', 'Awaiting Approval'],
+            options: ['', 'L1', 'L2'],
             required: true
           },
           { 
-            label: 'Requirement Resource*',
+            label: 'Requirement Resource',
             type: 'select',
             field: 'requirementResource',
             value: formData.demandInterviewDetails?.requirementResource || '',
@@ -446,7 +452,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
         ],
         [
           { 
-            label: 'Sales Person Name*',
+            label: 'Sales Person Name',
             type: 'text',
             field: 'nameOfTheSalesPerson',
             value: formData.demandInterviewDetails?.nameOfTheSalesPerson || '',
@@ -455,7 +461,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Resource Status*',
+            label: 'Resource Status',
             type: 'select',
             field: 'resourceStatus',
             value: formData.demandInterviewDetails?.resourceStatus || '',
@@ -494,6 +500,53 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
                 </div>
               ))}
             </div>
+            
+            {/* Conditional File Upload Section for L2 Payment Confirmation */}
+            {section.key === 'demandInterviewDetails' && showFileUpload && (
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="text-md font-semibold text-blue-800 mb-3">L2 Payment Confirmation - Document Upload</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Upload Payment Confirmation Document*
+                    </label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-blue-300 border-dashed rounded-lg">
+                      <div className="space-y-1 text-center">
+                        <svg className="mx-auto h-12 w-12 text-blue-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <div className="flex text-sm text-gray-600 justify-center">
+                          <label htmlFor="payment-confirmation-file" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                            <span>Upload a file</span>
+                            <input 
+                              id="payment-confirmation-file" 
+                              name="payment-confirmation-file" 
+                              type="file" 
+                              className="sr-only"
+                              onChange={(e) => handleFileUpload('paymentConfirmationFile', e.target.files)}
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            />
+                          </label>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          PDF, DOC, JPG, PNG up to 10MB
+                        </p>
+                      </div>
+                    </div>
+                    {uploadedFiles.paymentConfirmationFile && (
+                      <div className="mt-3">
+                        <p className="text-sm text-green-600 font-medium">
+                          ✓ File selected: {uploadedFiles.paymentConfirmationFile[0]?.name}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                 
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
