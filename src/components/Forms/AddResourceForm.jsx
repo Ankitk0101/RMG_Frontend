@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import FormInput from './FormInput';
 
-const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} }) => {
+const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {}, onFileUpload = () => {} }) => {
   const [uploadedFiles, setUploadedFiles] = useState({});
   
   // Check if L2 is selected for file upload condition
-  const showFileUpload = formData.demandInterviewDetails?.paymentConfirmation === 'L2';
+  const showFileUpload = formData.demandBudgetInfo?.paymentConformation === 'L2';
 
   const handleFileUpload = (field, files) => {
     setUploadedFiles(prev => ({
       ...prev,
       [field]: files
     }));
+    // Pass to parent component
+    if (onFileUpload) {
+      onFileUpload(field, files);
+    }
   };
 
   const sections = [
@@ -160,7 +164,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             type: 'select',
             field: 'laptopProvideBy',
             value: formData.contractDetails?.laptopProvideBy || '',
-            options: ['', 'Company', 'Client', 'Employee', 'Not Required']
+            options: ['', 'Company', 'Client', 'Employee', 'Not Required', 'Inspiron']
           },
           { 
             label: 'Is BGV Required', 
@@ -260,7 +264,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             type: 'select',
             field: 'experienceLevel',
             value: formData.clientDetails?.experienceLevel || '',
-            options: ['', '0-2 Years', '2-5 Years', '5-8 Years', '8+ Years']
+            options: ['', '0-2 Years', '2-5 Years', '5-8 Years', '8+ Years', '6 Years']
           },
         ]
       ]
@@ -368,6 +372,17 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
         ],
         [
           { 
+            label: 'Payment Confirmation',
+            type: 'select',
+            field: 'paymentConformation',
+            value: formData.demandBudgetInfo?.paymentConformation || '',
+            error: errors.paymentConformation,
+            options: ['', 'L1', 'L2'],
+            required: true
+          },
+        ],
+        [
+          { 
             label: 'Budget Note', 
             type: 'textarea',
             field: 'demandBudgetNote',
@@ -432,21 +447,21 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             required: true
           },
           { 
-            label: 'Payment Confirmation',
-            type: 'select',
-            field: 'paymentConfirmation',
-            value: formData.demandInterviewDetails?.paymentConfirmation || '',
-            error: errors.paymentConfirmation,
-            options: ['', 'L1', 'L2'],
-            required: true
-          },
-          { 
             label: 'Requirement Resource',
             type: 'select',
             field: 'requirementResource',
             value: formData.demandInterviewDetails?.requirementResource || '',
             error: errors.requirementResource,
             options: ['', 'Immediate', '15 Days', '30 Days', '60 Days', '90 Days', 'Flexible'],
+            required: true
+          },
+          { 
+            label: 'Resource Status',
+            type: 'select',
+            field: 'resourceStatus',
+            value: formData.demandInterviewDetails?.resourceStatus || '',
+            error: errors.resourceStatus,
+            options: ['', 'pending', 'shortlisted', 'interviewing', 'selected', 'onboarded', 'rejected', 'hold'],
             required: true
           },
         ],
@@ -458,15 +473,6 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             value: formData.demandInterviewDetails?.nameOfTheSalesPerson || '',
             error: errors.nameOfTheSalesPerson,
             placeholder: 'Enter sales person name',
-            required: true
-          },
-          { 
-            label: 'Resource Status',
-            type: 'select',
-            field: 'resourceStatus',
-            value: formData.demandInterviewDetails?.resourceStatus || '',
-            error: errors.resourceStatus,
-            options: ['', 'pending', 'shortlisted', 'interviewing', 'selected', 'onboarded', 'rejected', 'hold'],
             required: true
           },
         ]
@@ -502,7 +508,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
             </div>
             
             {/* Conditional File Upload Section for L2 Payment Confirmation */}
-            {section.key === 'demandInterviewDetails' && showFileUpload && (
+            {section.key === 'demandBudgetInfo' && showFileUpload && (
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h4 className="text-md font-semibold text-blue-800 mb-3">L2 Payment Confirmation - Document Upload</h4>
                 <div className="space-y-4">
@@ -523,7 +529,7 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
                               name="payment-confirmation-file" 
                               type="file" 
                               className="sr-only"
-                              onChange={(e) => handleFileUpload('paymentConfirmationFile', e.target.files)}
+                              onChange={(e) => handleFileUpload('paymentConfirmationDocumentPath', e.target.files)}
                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             />
                           </label>
@@ -534,16 +540,14 @@ const AddResourceForm = ({ formData = {}, errors = {}, onInputChange = () => {} 
                         </p>
                       </div>
                     </div>
-                    {uploadedFiles.paymentConfirmationFile && (
+                    {uploadedFiles.paymentConfirmationDocumentPath && (
                       <div className="mt-3">
                         <p className="text-sm text-green-600 font-medium">
-                          ✓ File selected: {uploadedFiles.paymentConfirmationFile[0]?.name}
+                          ✓ File selected: {uploadedFiles.paymentConfirmationDocumentPath[0]?.name}
                         </p>
                       </div>
                     )}
                   </div>
-                  
-                 
                 </div>
               </div>
             )}

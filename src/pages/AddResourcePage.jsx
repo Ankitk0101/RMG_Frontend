@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import AddResourceForm from '../components/Forms/AddResourceForm';
-import  {addResources } from '../services/resourceApi'
+import { addResources } from '../services/resourceApi';
 
-
-
-// Empty form data structure
+// Empty form data structure - UPDATED to match the provided fields
 const emptyFormData = {
   resourceDemandInfo: {
     demandCategory: "",
@@ -30,33 +28,6 @@ const emptyFormData = {
   demandJobDetails: {
     jobDescription: ""
   },
-  demandDurationInfo: {
-    billingStartDate: "",
-    billingEndDate: "",
-    tentativeDuration: "",
-    demandDurationNote: "",
-    uniqueId: ""
-  },
-  demandBudgetInfo: {
-    budgetType: "",
-    demandBudgetBillingStartDate: "",
-    currency: "",
-    demandBudgetNote: "",
-    budget: "",
-    profitMargin: "",
-    payoutType: ""
-  },
-  demandInterviewDetails: {
-    modeOfInterview: "",
-    interviewNote: "",
-    budgetStatus: "",
-    techProfile: "",
-    contractToHire: "",
-    paymentConfirmation: "",
-    requirementResource: "",
-    nameOfTheSalesPerson: "",
-    resourceStatus: ""
-  },
   companyDetails: {
     clientName: "",
     clientLinkedId: ""
@@ -66,11 +37,37 @@ const emptyFormData = {
     leadContact: "",
     experienceLevel: ""
   },
-  // Add file uploads section
+  demandDurationInfo: {
+    billingStartDate: "",
+    billingEndDate: "",
+    tentativeDuration: "",
+    demandDurationNote: ""
+  },
+  demandBudgetInfo: {
+    budgetType: "",
+    demandBudgetBillingStartDate: "",
+    currency: "",
+    demandBudgetNote: "",
+    budget: "",
+    profitMargin: "",
+    payoutType: "",
+    paymentConformation: "",
+    paymentConformationDocumentPath: ""
+  },
+  demandInterviewDetails: {
+    modeOfInterview: "",
+    interviewNote: "",
+    budgetStatus: "",
+    techProfile: "",
+    contractToHire: "",
+    requirementResource: "",
+    nameOfTheSalesPerson: "",
+    resourceStatus: ""
+  },
+  // File uploads section
   fileUploads: {
-    paymentConfirmationFile: null,
-    supportingDocuments: [],
-    uploadNotes: ""
+    paymentConfirmationDocumentPath: null,
+    supportingDocuments: []
   }
 };
 
@@ -78,6 +75,7 @@ const AddResourcePage = () => {
   const [formData, setFormData] = useState(emptyFormData);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const validateForm = () => {
     const newErrors = {};
@@ -148,6 +146,9 @@ const AddResourcePage = () => {
     if (!formData.demandBudgetInfo.currency) {
       newErrors.currency = 'Currency is required';
     }
+    if (!formData.demandBudgetInfo.paymentConformation) {
+      newErrors.paymentConformation = 'Payment Confirmation is required';
+    }
     
     // Company Details validations
     if (!formData.companyDetails.clientName) {
@@ -164,9 +165,6 @@ const AddResourcePage = () => {
     if (!formData.demandInterviewDetails.contractToHire) {
       newErrors.contractToHire = 'Contract to Hire status is required';
     }
-    if (!formData.demandInterviewDetails.paymentConfirmation) {
-      newErrors.paymentConfirmation = 'Payment Confirmation is required';
-    }
     if (!formData.demandInterviewDetails.requirementResource) {
       newErrors.requirementResource = 'Requirement Resource timeline is required';
     }
@@ -178,54 +176,72 @@ const AddResourcePage = () => {
     }
     
     // Special validation for L2 Payment Confirmation
-    if (formData.demandInterviewDetails.paymentConfirmation === 'L2') {
-      if (!formData.fileUploads?.paymentConfirmationFile) {
-        newErrors.paymentConfirmationFile = 'Payment confirmation document is required for L2';
+    if (formData.demandBudgetInfo.paymentConformation === 'L2') {
+      if (!formData.fileUploads?.paymentConfirmationDocumentPath) {
+        newErrors.paymentConfirmationDocumentPath = 'Payment confirmation document is required for L2';
       }
     }
     
-    setErrors(newErrors)
+    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitMessage('');
     
     if (!validateForm()) {
-      console.log("array for errro",Object.keys(errors))
-      let errorarray=Object.keys(errors)
-      console.log(errorarray)
-     alert(`fill this field - ${errorarray[0]}`);
-      console.log(errorarray[0]);
+      const errorarray = Object.keys(errors);
+      console.log('Validation errors:', errorarray);
+      alert(`Please fill this field: ${errorarray[0]}`);
       return;
     }
     
     setIsSubmitting(true);
+    
     try {
-      // Prepare form data for API submission
-      const submitData = {
+      console.log('Submitting form data:', formData);
+      
+      // Prepare data for API
+      const apiData = {
         ...formData,
-        // Convert files to base64 or prepare for upload
-        fileUploads: {
-          ...formData.fileUploads,
-          hasFiles: formData.fileUploads.paymentConfirmationFile !== null || 
-                   formData.fileUploads.supportingDocuments.length > 0
+        demandBudgetInfo: {
+          ...formData.demandBudgetInfo,
+          paymentConformationDocumentPath: formData.fileUploads?.paymentConfirmationDocumentPath 
+            ? formData.fileUploads.paymentConfirmationDocumentPath[0]?.name 
+            : ""
         }
       };
       
-      console.log('Submitting form data:', submitData);
+      // Call API and WAIT for response
+      const result = await addResources(apiData);
       
-      // submiting data to API call
-       addResources(formData)
+      console.log('API Response:', result);
       
-      alert('Resource added successfully!');
-      
-      // Reset form
-      setFormData(emptyFormData);
-      setErrors({});
+      if (result.success) {
+        setSubmitMessage('success');
+        alert('Resource added successfully!');
+        // Reset form after successful submission
+        setFormData(emptyFormData);
+        setErrors({});
+      } else {
+        setSubmitMessage('error');
+        
+        // Handle 401 (session expired)
+        if (result.status === 401) {
+          if (window.confirm('Your session has expired. Would you like to login again?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+          }
+        } else {
+          alert(`Failed to add resource: ${result.message}`);
+        }
+      }
     } catch (error) {
+      setSubmitMessage('error');
       console.error('Error submitting form:', error);
-      alert('Failed to add resource. Please try again.');
+      alert('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -240,7 +256,7 @@ const AddResourcePage = () => {
       }
     }));
     
-   
+    // Clear error for this field if it exists
     if (errors[field]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -255,24 +271,45 @@ const AddResourcePage = () => {
     setFormData(prev => ({
       ...prev,
       fileUploads: {
-        ...prev.fileUploads,
+        ...prev.fileUploads || {},
         [field]: files
       }
     }));
+    
+    // Clear file upload error if exists
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
-
- 
 
   const handleResetForm = () => {
     if (window.confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
       setFormData(emptyFormData);
       setErrors({});
+      setSubmitMessage('');
       alert('Form reset successfully!');
     }
   };
 
   return (
     <div className="space-y-6">
+      {/* Success/Error Message */}
+      {submitMessage === 'success' && (
+        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+          Resource added successfully!
+        </div>
+      )}
+      
+      {submitMessage === 'error' && (
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          Failed to add resource. Please try again.
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Add a resource</h1>
@@ -280,22 +317,24 @@ const AddResourcePage = () => {
         </div>
         <div className="flex gap-3">
           <button 
-            className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
+            className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
             onClick={handleResetForm}
+            type="button"
+            style={{ cursor: 'pointer' }}
           >
             Reset
           </button>
           <button 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
             onClick={handleSubmit}
             disabled={isSubmitting}
+            type="button"
+            style={{ cursor: 'pointer' }}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </div>
-
-     
       
       <AddResourceForm 
         formData={formData}

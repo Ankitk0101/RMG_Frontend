@@ -143,7 +143,7 @@ export const authService = {
       await fetch(`${API_BASE_URL}/logoutUser`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token }),
@@ -167,7 +167,7 @@ export const authService = {
       body: JSON.stringify({
         authorization: `${token}` // Send in body with Bearer prefix
       }),
-      
+
     });
     
     const data = await response.json();
