@@ -1,7 +1,7 @@
 import React from "react";
 import ResumePopUp from "../ResumePopUp/ResumePopUp";
 import { useState, useRef } from "react";
-
+import { uploadResume } from "../../services/resumeService";
 const sampleJsonCandidates = [
   {
     name: "John Wick",
@@ -192,6 +192,80 @@ export default function ResouceComponents(props) {
   const [showResumePopUp, setShowResumePopUp] = useState(false);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   console.log("oneResource ----- ", oneResource);
+
+  const [candidateForm, setCandidateForm] = useState({
+    candidateName: "",
+    candidateEmail: "",
+    candidateExperience: 0,
+    candidateExpectedCTC: "",
+    candidateCurrentCTC: "",
+    candidateSkills: "",
+    resumeRefPath: null,
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCandidateForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCandidateForm((prev) => ({
+        ...prev,
+        resumeRefPath: file.name,
+      }));
+    }
+  };
+
+  const handleUploadSubmit = () => {
+    if (
+      !candidateForm.candidateName ||
+      !candidateForm.candidateEmail ||
+      !candidateForm.resumeRefPath
+    ) {
+      alert("Please fill in all required fields and upload a resume.");
+      return;
+    }
+
+    console.log("Submitting Candidate Form:", candidateForm);
+
+    // TODO: Integrate actual API call here
+    // const formData = new FormData();
+    // formData.append("name", candidateForm.candidateName);
+    // ... append other fields ...
+    // formData.append("resume", candidateForm.resumeFile);
+
+    // Simulate success
+    const { _id } = oneResource;
+    console.log("candidateForm", candidateForm);
+    console.log("resourceModelId", _id);
+    console.log("fileInputRef", fileInputRef);
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log("user", user);
+    const userId = user.id;
+    const recruterId = userId;
+    uploadResume({ ...candidateForm, resourceModelId: _id, recruterId });
+
+    alert("Candidate profile uploaded successfully!");
+
+    // Reset form and close modal
+    setCandidateForm({
+      candidateName: "",
+      candidateEmail: "",
+      candidateExperience: 0,
+      candidateExpectedCTC: "",
+      candidateCurrentCTC: "",
+      candidateSkills: "",
+      resumeRefPath: null,
+    });
+    setFiles([]); // Clear legacy file state just in case
+    setShowModal(false);
+    setShowDuration(false);
+  };
   const handleFiles = (selectedFiles) => {
     const newFiles = Array.from(selectedFiles);
     setFiles((prev) => [...prev, ...newFiles]);
@@ -365,7 +439,7 @@ export default function ResouceComponents(props) {
             {/* Budget */}
             <div className="flex flex-col items-start justify-center">
               <p className="text-[14px] font-medium">
-                {oneResource.demandBudgetId.budget}
+                {oneResource.demandBudgetId.budget} INR
               </p>
               <span className="w-[80px] inline-block mt-2 px-2 py-[2px] text-[12px] rounded bg-[#4C6EF5] text-white text-center">
                 {oneResource.demandBudgetId.budgetType}
@@ -591,90 +665,153 @@ export default function ResouceComponents(props) {
       </div>
       {showModal && (
         <div className="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center">
-          <div className="bg-white w-[520px] rounded-[8px] p-6 shadow-lg">
-            <div className="flex justify-between items-center mb-4">
+          <div className="bg-white w-[600px] rounded-[8px] p-6 shadow-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
               <p className="text-[18px] font-medium text-[#1C1C1C]">
-                Upload Resumes
+                Upload Candidate Profile
               </p>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-[#6C6E70]"
+                className="text-[#6C6E70] text-xl"
               >
                 ✕
               </button>
             </div>
 
-            {/* Drag & Drop + Click */}
-            <div
-              onClick={() => fileInputRef.current.click()}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-              className="h-[160px] border-2 border-dashed border-[#D9D9D9] rounded-[8px]
-                                flex flex-col justify-center items-center text-center
-                                cursor-pointer hover:bg-[#F8F9FA]"
-            >
-              <p className="text-[14px] text-[#6C6E70]">
-                Drag & drop resumes here or click to browse
-              </p>
-              <p className="text-[12px] text-[#9A9A9A]">
-                PDF, DOC, DOCX supported
-              </p>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Name */}
+              <div>
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Candidate Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="candidateName"
+                  value={candidateForm.candidateName}
+                  onChange={handleInputChange}
+                  className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
+                  placeholder="John Doe"
+                />
+              </div>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept=".pdf,.doc,.docx"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
+              {/* Email */}
+              <div>
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="candidateEmail"
+                  value={candidateForm.candidateEmail}
+                  onChange={handleInputChange}
+                  className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              {/* Experience */}
+              <div>
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Experience (Years)
+                </label>
+                <input
+                  type="number"
+                  name="candidateExperience"
+                  value={candidateForm.candidateExperience}
+                  onChange={handleInputChange}
+                  className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
+                  placeholder="e.g. 5"
+                />
+              </div>
+
+              {/* Current CTC */}
+              <div>
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Current CTC
+                </label>
+                <input
+                  type="text"
+                  name="candidateCurrentCTC"
+                  value={candidateForm.candidateCurrentCTC}
+                  onChange={handleInputChange}
+                  className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
+                  placeholder="e.g. 10 LPA"
+                />
+              </div>
+
+              {/* Expected CTC */}
+              <div>
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Expected CTC
+                </label>
+                <input
+                  type="text"
+                  name="candidateExpectedCTC"
+                  value={candidateForm.candidateExpectedCTC}
+                  onChange={handleInputChange}
+                  className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
+                  placeholder="e.g. 15 LPA"
+                />
+              </div>
+
+              {/* Skills */}
+              <div className="col-span-2">
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Skills
+                </label>
+                <input
+                  type="text"
+                  name="candidateSkills"
+                  value={candidateForm.candidateSkills}
+                  onChange={handleInputChange}
+                  className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
+                  placeholder="Java, React, Node.js..."
+                />
+              </div>
+
+              {/* Resume Upload */}
+              <div className="col-span-2 mt-2">
+                <label className="block text-[12px] text-[#6C6E70] mb-1">
+                  Resume <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="block w-full text-[12px] text-slate-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-[12px] file:font-semibold
+                      file:bg-[#F0F2FF] file:text-[#5B6ACF]
+                      hover:file:bg-[#E1E5FF] cursor-pointer"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Files List */}
-            {files.length > 0 && (
-              <div className="mt-4 max-h-[120px] overflow-auto">
-                {files.map((file, i) => (
-                  <p key={i} className="text-[13px] text-[#1C1C1C]">
-                    📄 {file.name}
-                  </p>
-                ))}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#F0F0F0]">
               <button
                 onClick={() => {
-                  setShowModal(false), setFiles([]);
+                  setShowModal(false);
+                  setCandidateForm({
+                    candidateName: "",
+                    candidateEmail: "",
+                    candidateExperience: 0,
+                    candidateExpectedCTC: "",
+                    candidateCurrentCTC: "",
+                    candidateSkills: "",
+                    resumeRefPath: null,
+                  });
                 }}
-                className="px-4 py-2 text-[14px] rounded bg-[#BFBFBF] text-white"
+                className="px-4 py-2 text-[14px] rounded bg-[#BFBFBF] text-white hover:bg-[#A6A6A6]"
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  if (files.length === 0) {
-                    alert("Please upload at least one resume");
-                    return;
-                  }
-
-                  // 🔹 Example: prepare data for backend
-                  const formData = new FormData();
-                  files.forEach((file) => {
-                    formData.append("resumes", file);
-                  });
-
-                  console.log("Uploading files:", files);
-
-                  // 🔹 Later you will call API here
-                  // axios.post("/api/upload-resumes", formData)
-
-                  // 🔹 Success behaviour
-                  setUploadedFiles([...uploadedFiles, ...files]);
-                  setFiles([]);
-                  setShowModal(false);
-                  setShowDuration(false);
-                }}
-                className="px-4 py-2 text-[14px] rounded bg-[#2F9E44] text-white"
+                onClick={handleUploadSubmit}
+                className="px-6 py-2 text-[14px] rounded bg-[#2F9E44] text-white hover:bg-[#288b3c]"
               >
                 Upload
               </button>

@@ -1,0 +1,90 @@
+const API_BASE_URL = 'http://localhost:5000/api/resource/';
+
+const getAuthHeaders = () => {
+  console.log('getAuthHeaders called');
+  const token = localStorage.getItem('token');
+  console.log('token in getAuthHeaders', token);
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['authorization'] = token;
+  } else {
+    console.warn('No token found in localStorage');
+  }
+  
+  return headers;
+};
+
+const handleResponse = async (response) => {
+  console.log('handleResponse called');
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const error = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    error.status = response.status;
+    error.data = errorData;
+    throw error;
+  }
+  console.log('response in handleResponse', response);
+  
+  return response.json();
+};
+
+const handleApiError = (error) => {
+  console.error('API Error:', {
+    status: error.status,
+    message: error.message,
+    data: error.data
+  });
+  
+  // Handle 401 specifically without auto-logout
+  if (error.status === 401) {
+    return {
+      success: false,
+      message: 'Session expired. Please login again.',
+      status: 401
+    };
+  }
+  
+  return {
+    success: false,
+    message: error.data?.message || error.message || 'API request failed',
+    status: error.status
+  };
+};
+
+export const uploadResume = async (formData,) => {
+    console.log("formData in uploadResume", formData);
+  try {
+    const token = localStorage.getItem('token');
+    const headers = {};
+    
+    if (token) {
+      headers['authorization'] = token;
+    }
+    
+    // Note: Don't set Content-Type for FormData - browser will set it automatically with boundary
+    const response = await fetch(`${API_BASE_URL}add-resume`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            authorization: token
+        },
+        body: JSON.stringify(formData)
+    });
+
+    console.log('response in uploadResume', response);
+    const responseData = await handleResponse(response);
+    console.log('responseData in uploadResume', responseData);
+    
+    return {
+      success: true,
+      data: responseData,
+      message: 'File uploaded successfully'
+    };
+  } catch (error) {
+    console.log("error in uploadResume", error);
+    return handleApiError(error);
+  }
+};
