@@ -83,12 +83,13 @@ export const addResources = async (data) => {
 };
 
 export const getAllResource = async () => {
+  console.log("Get all resource called")
   try {
     const response = await fetch(`${API_BASE_URL}get-all-resource`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
-
+    console.log("Get all resource response",response)
     const responseData = await handleResponse(response);
     
     return {
