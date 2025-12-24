@@ -1,23 +1,23 @@
-import React from 'react';
-import StatsCards from './StatsCards';
-import DemandChart from './DemandChart';
-import DemandTable from './DemandTable';
+import React from "react";
+import StatsCards from "./StatsCards";
+import DemandChart from "./DemandChart";
+import DemandTable from "./DemandTable";
 
 const DashboardLayout = () => {
   const statsData = [
-    { label: 'Total Demand', value: '10035', color: 'bg-blue-500' },
-    { label: 'New Requirement', value: '10035', color: 'bg-green-500' },
-    { label: 'Replacement', value: '10035', color: 'bg-purple-500' },
-    { label: 'Interview Selection', value: '10035', color: 'bg-orange-500' },
+    { label: "Total Demand", value: "10035", color: "bg-blue-500" },
+    { label: "New Requirement", value: "10035", color: "bg-green-500" },
+    { label: "Replacement", value: "10035", color: "bg-purple-500" },
+    { label: "Interview Selection", value: "10035", color: "bg-orange-500" },
   ];
 
   const statusData = [
-    { label: 'Added', value: '682', color: 'bg-blue-500' },
-    { label: 'Pending', value: '258', color: 'bg-yellow-500' },
-    { label: 'Fulfilled', value: '359', color: 'bg-green-500' },
-    { label: 'Kept on hold', value: '33', color: 'bg-orange-500' },
-    { label: 'Inactive Closed', value: '27', color: 'bg-gray-500' },
-    { label: 'Could Not fulfill', value: '5', color: 'bg-red-500' },
+    { label: "Added", value: "682", color: "bg-blue-500" },
+    { label: "Pending", value: "258", color: "bg-yellow-500" },
+    { label: "Fulfilled", value: "359", color: "bg-green-500" },
+    { label: "Kept on hold", value: "33", color: "bg-orange-500" },
+    { label: "Inactive Closed", value: "27", color: "bg-gray-500" },
+    { label: "Could Not fulfill", value: "5", color: "bg-red-500" },
   ];
 
   return (
@@ -60,23 +60,24 @@ const DashboardLayout = () => {
 
         {/* 2025 Requests Chart */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">2025 requests</h2>
-          <div className="flex flex-wrap gap-3 mb-4">
+          {/* <div className="flex flex-wrap gap-3 mb-4">
             {statusData.map((stat) => (
               <div key={stat.label} className="flex items-center gap-2">
                 <div className={`w-3 h-3 ${stat.color} rounded-full`}></div>
                 <span className="text-sm text-gray-600">{stat.label}</span>
               </div>
             ))}
-          </div>
-          <div className="bg-gray-50 rounded-lg p-6">
+          </div> */}
+          <div className="rounded-lg p-6">
             <DemandChart />
           </div>
         </div>
 
         {/* Table Section */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">By Status (Based on created on)</h2>
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">
+            By Status (Based on created on)
+          </h2>
           <DemandTable />
         </div>
       </div>

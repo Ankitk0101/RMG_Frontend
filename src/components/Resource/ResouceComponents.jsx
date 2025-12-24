@@ -1,197 +1,24 @@
 import React from "react";
 import ResumePopUp from "../ResumePopUp/ResumePopUp";
 import { useState, useRef } from "react";
-import { uploadResume } from "../../services/resumeService";
-const sampleJsonCandidates = [
-  {
-    name: "John Wick",
-    email: "rashi.sharma@example.com",
-    phone: "1234567890",
-    resume: "resume.pdf",
-    coverLetter: "cover-letter.pdf",
-    status: "Interviewed",
-    interviewDate: "2023-01-01",
-    interviewer: "John Doe",
-    notes: "Candidate is a good fit for the role.",
-    experience: "5 years",
-    "Exp CTC": "500000 INR",
-    currentProfileStatusList: [
-      "Screening",
-      "Shortlisted",
-      "Interviewed",
-      "Offered",
-      "Hired",
-    ],
-  },
-  {
-    name: "Krunal Sharma",
-    email: "rashi.sharma@example.com",
-    phone: "1234567890",
-    resume: "resume.pdf",
-    coverLetter: "cover-letter.pdf",
-    status: "Interviewed",
-    interviewDate: "2023-01-01",
-    interviewer: "John Doe",
-    notes: "Candidate is a good fit for the role.",
-    experience: "5 years",
-    "Exp CTC": "500000 INR",
-    currentProfileStatusList: ["Screening", "Shortlisted"],
-  },
-  {
-    name: "Steave Smith",
-    email: "rashi.sharma@example.com",
-    phone: "1234567890",
-    resume: "resume.pdf",
-    coverLetter: "cover-letter.pdf",
-    status: "Interviewed",
-    interviewDate: "2023-01-01",
-    interviewer: "John Doe",
-    notes: "Candidate is a good fit for the role.",
-    experience: "5 years",
-    "Exp CTC": "500000 INR",
-    currentProfileStatusList: [
-      "Screening",
-      "Shortlisted",
-      "Interviewed",
-      "Rejected",
-    ],
-  },
-  {
-    name: "Cameron Green",
-    email: "rashi.sharma@example.com",
-    phone: "1234567890",
-    resume: "resume.pdf",
-    coverLetter: "cover-letter.pdf",
-    status: "Interviewed",
-    interviewDate: "2023-01-01",
-    interviewer: "John Doe",
-    notes: "Candidate is a good fit for the role.",
-    experience: "5 years",
-    "Exp CTC": "500000 INR",
-    currentProfileStatusList: ["Screening", "Shortlisted"],
-  },
-];
-// const resource = {
-//   _id: "69453e1235cfab603173880f",
-//   resourceId: "RES19122025V1729",
-//   resourceDemandInfoId: {
-//     _id: "69453e1235cfab6031738807",
-//     resourceInfoId: "RIN19122025C1729",
-//     demandCategory: "Non-IT",
-//     noOfResource: 8790,
-//     demandLevel: "Mid (2-5 years)",
-//     engagement: "Contract",
-//     demandTechnology: {
-//       _id: "69453e1235cfab6031738802",
-//       demandTechnologyName: "React",
-//       createdAt: "2025-12-19T11:59:14.813Z",
-//       updatedAt: "2025-12-19T11:59:14.813Z",
-//       __v: 0,
-//     },
-//     demandSubTechnology: {
-//       _id: "69453e1235cfab6031738805",
-//       demandSubTechnologyName: "Next.js",
-//       demandTechnologyId: "69453e1235cfab6031738802",
-//       createdAt: "2025-12-19T11:59:14.817Z",
-//       updatedAt: "2025-12-19T11:59:14.817Z",
-//       __v: 0,
-//     },
-//     demandType: "Permanent",
-//     leadId: {
-//       _id: "69453e1235cfab60317387ff",
-//       clientId: {
-//         _id: "69453e1235cfab60317387fc",
-//         clientName: "Mahesh",
-//         clientLinkedId: "7777777",
-//         clientId: "MAH19122025L1729",
-//         createdAt: "2025-12-19T11:59:14.789Z",
-//         updatedAt: "2025-12-19T11:59:14.789Z",
-//         __v: 0,
-//       },
-//       leadName: "Mahesh",
-//       leadContact: "9959822122",
-//       experienceLevel: "5-8 Years",
-//       leadId: "MAH19122025U1729",
-//       createdAt: "2025-12-19T11:59:14.805Z",
-//       updatedAt: "2025-12-19T11:59:14.805Z",
-//       __v: 0,
-//     },
-//     createdAt: "2025-12-19T11:59:14.820Z",
-//     updatedAt: "2025-12-19T11:59:14.820Z",
-//     __v: 0,
-//   },
-//   contractDetailsId: {
-//     _id: "69453e1235cfab6031738809",
-//     contractDetailsId: "NOR19122025C1729",
-//     clientNeed: "Normal (2-4 weeks)",
-//     contractType: "Contract",
-//     workingDays: "6 days",
-//     workingTiming: "10AM - 7PM",
-//     workingLocation: "Hybrid",
-//     workingMode: "Hybrid",
-//     laptopProvideBy: "Client",
-//     isBGVRequired: "No",
-//     clientBGV_Verify: "No",
-//     BGVNote: "fghjk,",
-//     createdAt: "2025-12-19T11:59:14.824Z",
-//     updatedAt: "2025-12-19T11:59:14.824Z",
-//     __v: 0,
-//   },
-//   demandDurationId: {
-//     _id: "69453e1235cfab603173880d",
-//     billingStartDate: "2025-12-20T00:00:00.000Z",
-//     billingEndDate: "2025-12-27T00:00:00.000Z",
-//     tentativeDuration: "3 Months",
-//     demandDurationNote: "sdfh",
-//     demandDurationId: "DEM19122025X1729",
-//     createdAt: "2025-12-19T11:59:14.827Z",
-//     updatedAt: "2025-12-19T11:59:14.827Z",
-//     __v: 0,
-//   },
-//   demandBudgetId: {
-//     _id: "69453e1235cfab603173880b",
-//     demandBudgetId: "HOU19122025W1729",
-//     budgetType: "Hourly",
-//     demandBudgetBillingStartDate: "2025-12-31T00:00:00.000Z",
-//     currency: "USD",
-//     demandBudgetNote: "d,",
-//     budget: 77,
-//     profitMargin: 7,
-//     payoutType: "Weekly",
-//     paymentConformation: "L1",
-//     paymentConformationDocumentPath: "",
-//     createdAt: "2025-12-19T11:59:14.825Z",
-//     updatedAt: "2025-12-19T11:59:14.825Z",
-//     __v: 0,
-//   },
-//   jobDescription: "ertyuiol",
-//   modeOfInterview: "Phone",
-//   interviewNote: "dfghj",
-//   budgetStatus: "In Review",
-//   techProfile: "werty",
-//   contractToHire: "No",
-//   requirementResource: "15 Days",
-//   nameOfTheSalesPerson: "asdfgh",
-//   resourceStatus: "shortlisted",
-//   createdAt: "2025-12-19T11:59:14.828Z",
-//   updatedAt: "2025-12-19T11:59:14.828Z",
-//   __v: 0,
-// };
+import { uploadResume, updateResumeStatus } from "../../services/resumeService";
+import { getSingalResource } from "../../services/resourceApi";
+
 export default function ResouceComponents(props) {
   console.log("ResouceComponents Called");
-  const { index, clientId, showClientId, oneResource } = props;
-  console.log("resource ---- from BE ->  ", oneResource);
+  const { index, showClientId, oneResource } = props;
+  const [isProfilesUpdating, setIsProfilesUpdating] = useState(false);
+  const [updatedResource, setUpdatedResource] = useState(oneResource);
+  console.log("resource ---- from BE ->  ", updatedResource);
   const [showModal, setShowModal] = useState(false);
   const [showDuration, setShowDuration] = useState(true);
-  const [files, setFiles] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const fileInputRef = useRef(null);
-  const [candidatesObjList, setCandidatesObjList] = useState([
-    ...sampleJsonCandidates,
-  ]);
   const [showResumePopUp, setShowResumePopUp] = useState(false);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
-  console.log("oneResource ----- ", oneResource);
+  const fileInputRef = useRef(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [candidateToUpdate, setCandidateToUpdate] = useState(null);
+  console.log("updatedResource ----- ", updatedResource);
 
   const [candidateForm, setCandidateForm] = useState({
     candidateName: "",
@@ -221,7 +48,9 @@ export default function ResouceComponents(props) {
     }
   };
 
-  const handleUploadSubmit = () => {
+  const handleUploadSubmit = async () => {
+    console.log("handleUploadSubmit called");
+    setIsProfilesUpdating(true);
     if (
       !candidateForm.candidateName ||
       !candidateForm.candidateEmail ||
@@ -233,68 +62,86 @@ export default function ResouceComponents(props) {
 
     console.log("Submitting Candidate Form:", candidateForm);
 
-    // TODO: Integrate actual API call here
-    // const formData = new FormData();
-    // formData.append("name", candidateForm.candidateName);
-    // ... append other fields ...
-    // formData.append("resume", candidateForm.resumeFile);
+    const recruterId = JSON.parse(localStorage.getItem("user")).id;
 
-    // Simulate success
-    const { _id } = oneResource;
-    console.log("candidateForm", candidateForm);
-    console.log("resourceModelId", _id);
-    console.log("fileInputRef", fileInputRef);
-    const user = JSON.parse(localStorage.getItem("user"));
-    console.log("user", user);
-    const userId = user.id;
-    const recruterId = userId;
-    uploadResume({ ...candidateForm, resourceModelId: _id, recruterId });
+    try {
+      await uploadResume({
+        ...candidateForm,
+        resourceModelId: updatedResource._id,
+        recruterId,
+      });
+      const updatedResourcefromDb = await getSingalResource(
+        updatedResource._id
+      );
+      console.log("updatedResourcefromDb", updatedResourcefromDb);
+      setTimeout(() => {
+        if (updatedResourcefromDb.success) {
+          setIsProfilesUpdating(false);
+          setUpdatedResource(updatedResourcefromDb.data.data);
+        }
+      }, 3000);
 
-    alert("Candidate profile uploaded successfully!");
-
-    // Reset form and close modal
-    setCandidateForm({
-      candidateName: "",
-      candidateEmail: "",
-      candidateExperience: 0,
-      candidateExpectedCTC: "",
-      candidateCurrentCTC: "",
-      candidateSkills: "",
-      resumeRefPath: null,
-    });
-    setFiles([]); // Clear legacy file state just in case
-    setShowModal(false);
-    setShowDuration(false);
-  };
-  const handleFiles = (selectedFiles) => {
-    const newFiles = Array.from(selectedFiles);
-    setFiles((prev) => [...prev, ...newFiles]);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
+      // Reset form and close modal
+      setCandidateForm({
+        candidateName: "",
+        candidateEmail: "",
+        candidateExperience: 0,
+        candidateExpectedCTC: "",
+        candidateCurrentCTC: "",
+        candidateSkills: "",
+        resumeRefPath: null,
+      });
+      setShowModal(false);
+      setShowDuration(false);
+    } catch (error) {
+      console.error("Error uploading profile:", error);
+      alert("Failed to upload profile. Please try again.");
+    }
   };
 
-  const handleFileSelect = (e) => {
-    handleFiles(e.target.files);
+  const handleUpdateStatus = (candidateId, currentTimeline) => {
+    setCandidateToUpdate({ candidateId, currentTimeline });
+    setShowStatusModal(true);
   };
 
-  const handleUpdateStatus = (candidateName, status) => {
-    const updatedCandidates = candidatesObjList.map((candidate) => {
-      if (candidate.name === candidateName) {
-        // Create a new object to avoid mutating state directly
-        return {
-          ...candidate,
-          currentProfileStatusList: [
-            ...candidate.currentProfileStatusList,
-            status,
-          ],
-        };
+  const handleStatusSubmit = async () => {
+    if (!selectedStatus) {
+      alert("Please select a status.");
+      return;
+    }
+
+    const { candidateId, currentTimeline } = candidateToUpdate;
+    const updatedCandidateStatusTimeline = [...currentTimeline, selectedStatus];
+
+    try {
+      setIsProfilesUpdating(true);
+      setShowStatusModal(false);
+      const response = await updateResumeStatus(
+        candidateId,
+        updatedCandidateStatusTimeline
+      );
+
+      if (response.success) {
+        const updatedResourcefromDb = await getSingalResource(
+          updatedResource._id
+        );
+        setTimeout(() => {
+          if (updatedResourcefromDb.success) {
+            setIsProfilesUpdating(false);
+            setUpdatedResource(updatedResourcefromDb.data.data);
+            setSelectedStatus("");
+            setCandidateToUpdate(null);
+          }
+        }, 3000);
+      } else {
+        alert(response.message || "Failed to update status.");
+        setIsProfilesUpdating(false);
       }
-      return candidate;
-    });
-    setCandidatesObjList(updatedCandidates);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("An unexpected error occurred.");
+      setIsProfilesUpdating(false);
+    }
   };
 
   function formatDate(dateString) {
@@ -354,6 +201,12 @@ export default function ResouceComponents(props) {
       Math.abs(diffDays) > 1 ? "s" : ""
     } ago (${formattedDate})`;
   }
+  // Helper to check if started
+  const isResourceStarted = (status) => {
+    return status === "In Progress" || status === "Completed";
+  };
+
+  const isStarted = isResourceStarted(updatedResource.resourceStatus);
 
   return (
     <>
@@ -365,7 +218,7 @@ export default function ResouceComponents(props) {
           {showClientId && (
             <div className="relative z-10 top-0 w-[24px] h-[160px] rounded-full bg-[#5B6ACF] flex items-center justify-center shadow-sm">
               <span className="text-white text-[12px] font-medium -rotate-90 whitespace-nowrap tracking-wide">
-                {clientId}
+                {updatedResource.resourceDemandInfoId.leadId.clientId.clientId}
               </span>
             </div>
           )}
@@ -375,7 +228,7 @@ export default function ResouceComponents(props) {
         <div className="flex-1 border border-[#E5E5E5] rounded-[8px] mb-6">
           {/* BGV */}
           <div className="px-6 py-3">
-            {oneResource.contractDetailsId.isBGVRequired === "Yes" ? (
+            {updatedResource.contractDetailsId.isBGVRequired === "Yes" ? (
               <span className="inline-block px-3 py-[4px] text-[12px] rounded bg-[#C92A2A] text-white">
                 BGV required
               </span>
@@ -388,19 +241,22 @@ export default function ResouceComponents(props) {
             {/* Client */}
             <div>
               <span className="inline-block mb-2 px-2 py-[2px] text-[12px] rounded bg-[#FF6B6B] text-white">
-                Lead {oneResource.resourceDemandInfoId.leadId.leadId}
+                Lead {updatedResource.resourceDemandInfoId.leadId.leadId}
               </span>
 
               <p className="text-[14px] font-medium text-[#1C1C1C]">
                 #
-                {oneResource.resourceDemandInfoId.leadId.leadId
+                {updatedResource.resourceDemandInfoId.leadId.leadId
                   .split("")
                   .splice(9, 5)
                   .join("")}{" "}
-                {oneResource.resourceDemandInfoId.leadId.leadName}
+                {updatedResource.resourceDemandInfoId.leadId.leadName}
               </p>
               <p className="text-[12px] text-[#6C6E70]">
-                {oneResource.resourceDemandInfoId.leadId.clientId.clientName}
+                {
+                  updatedResource.resourceDemandInfoId.leadId.clientId
+                    .clientName
+                }
               </p>
               <p className="text-[12px] text-[#6C6E70] mt-1">
                 LinkedIn connect Rashi 2025
@@ -410,11 +266,11 @@ export default function ResouceComponents(props) {
                 <div className="w-8 h-8 rounded-full bg-[#D9D9D9]" />
                 <div>
                   <p className="text-[13px] text-[#1C1C1C]">
-                    {oneResource.nameOfTheSalesPerson}
+                    {updatedResource.nameOfTheSalesPerson}
                   </p>
                   <p className="text-[12px] text-[#6C6E70]">Sales (w/ local)</p>
                   <p className="text-[11px] text-[#6C6E70]">
-                    {formatDate(oneResource.createdAt)}
+                    {formatDate(updatedResource.createdAt)}
                   </p>
                 </div>
               </div>
@@ -424,10 +280,10 @@ export default function ResouceComponents(props) {
             <div>
               <p className="text-[14px] font-medium">(Unsold)</p>
               <p className="text-[13px] mt-1">
-                {oneResource.resourceDemandInfoId.demandLevel}
+                {updatedResource.resourceDemandInfoId.demandLevel}
               </p>
               <p className="text-[13px]">
-                Database, {oneResource.resourceDemandInfoId.engagement}
+                Database, {updatedResource.resourceDemandInfoId.engagement}
               </p>
               <p className="text-[12px] text-[#6C6E70]">(8 hours)</p>
 
@@ -439,13 +295,13 @@ export default function ResouceComponents(props) {
             {/* Budget */}
             <div className="flex flex-col items-start justify-center">
               <p className="text-[14px] font-medium">
-                {oneResource.demandBudgetId.budget} INR
+                {updatedResource.demandBudgetId.budget} INR
               </p>
               <span className="w-[80px] inline-block mt-2 px-2 py-[2px] text-[12px] rounded bg-[#4C6EF5] text-white text-center">
-                {oneResource.demandBudgetId.budgetType}
+                {updatedResource.demandBudgetId.budgetType}
               </span>
               <span className="w-[80px] inline-block mt-1 px-2 py-[2px] text-[12px] rounded bg-[#FAB005] text-white text-center">
-                {oneResource.contractDetailsId.workingLocation}
+                {updatedResource.contractDetailsId.workingLocation}
               </span>
               <span className="w-[80px] inline-block mt-1 px-2 py-[2px] text-[12px] rounded border text-center">
                 B3
@@ -453,125 +309,162 @@ export default function ResouceComponents(props) {
             </div>
 
             {/* Profile */}
-            {uploadedFiles.length > 0 ? (
+            {isProfilesUpdating ? (
+              <p className="text-[14px] text-[#5B6ACF] animate-pulse">
+                Profiles updating...
+              </p>
+            ) : isStarted ||
+              (updatedResource?.resumesOfThisResource?.length ?? 0) > 0 ? (
               <div>
-                {candidatesObjList.map((candidate, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between mb-2"
-                  >
-                    <div className="flex items-center">
-                      <p className="text-[14px] font-medium mr-2">
-                        Lead {index + 1}
-                      </p>
-                      {/* Status Circles */}
-                      <div className="flex -space-x-1 ">
-                        {candidate.currentProfileStatusList.map((status, i) => {
-                          let statusColor;
-                          if (status === "Screening")
-                            statusColor = "bg-[#C92A2A]";
-                          else if (status === "Shortlisted")
-                            statusColor = "bg-[#2F9E44]";
-                          else if (status === "Interviewed")
-                            statusColor = "bg-[#FAB005]";
-                          else if (status === "Hired")
-                            statusColor = "bg-[#2F9E44]";
-                          else if (status === "Rejected")
-                            statusColor = "bg-[#C92A2A]";
-                          else if (status === "Offered")
-                            statusColor = "bg-[#2F9E44]";
-                          else statusColor = "bg-[#C92A2A]";
-
-                          return (
-                            <div key={i} className="relative group">
-                              <div
-                                className={`h-[20px] w-[20px] rounded-full text-white ${statusColor} border border-white ml-[5px] cursor-pointer`}
-                                title={status}
-                              />
-                              {/* Tooltip Popup */}
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-[#E5E5E5] rounded-lg shadow-xl p-4 hidden group-hover:block z-[100]">
-                                <div className="flex justify-between items-start mb-2">
-                                  <div>
-                                    <p className="text-[14px] font-semibold text-[#1C1C1C]">
-                                      {candidate.name}
-                                    </p>
-                                    <p className="text-[12px] text-[#6C6E70]">
-                                      {candidate.email}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div className="space-y-1 mb-3">
-                                  <div className="flex justify-between text-[12px]">
-                                    <span className="text-[#6C6E70]">
-                                      Experience:
-                                    </span>
-                                    <span className="font-medium">
-                                      {candidate.experience}
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between text-[12px]">
-                                    <span className="text-[#6C6E70]">
-                                      Exp. CTC:
-                                    </span>
-                                    <span className="font-medium">
-                                      {candidate["Exp CTC"]}
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between text-[12px]">
-                                    <span className="text-[#6C6E70]">
-                                      Status:
-                                    </span>
-                                    <span className="font-medium">
-                                      {candidate.status}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <button
-                                  className="w-full py-1.5 bg-[#5B6ACF] text-white text-[12px] rounded hover:bg-[#4854c7] transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowResumePopUp(true);
-                                  }}
-                                >
-                                  View Resume
-                                </button>
-
-                                {/* Arrow tail */}
-                                <div className="absolute left-1/2 -top-[5px] -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-[#E5E5E5] transform rotate-45"></div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleUpdateStatus(candidate.name)}
-                      className="text-[12px] text-[#6C6E70] border border-[#6C6E70] px-2 py-[4px] rounded cursor-pointer"
+                {(updatedResource?.resumesOfThisResource ?? []).map(
+                  (candidate, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between mb-2"
                     >
-                      Update Status
-                    </button>
-                  </div>
-                ))}
+                      <div className="flex items-center">
+                        <p className="text-[14px] font-medium mr-2">
+                          Lead {index + 1}
+                        </p>
+                        {/* Status Circles */}
+                        <div className="flex -space-x-1 ">
+                          {(candidate?.candidateStatusTimeline ?? []).map(
+                            (status, i) => {
+                              let statusColor;
+                              if (status === "Screening_Scheduled")
+                                statusColor = "bg-[#4C6EF5]";
+                              else if (status === "Interview_Scheduled")
+                                statusColor = "bg-[#FAB005]";
+                              else if (status === "Interview_Cleared")
+                                statusColor = "bg-[#20C997]";
+                              else if (status === "HR_Cleared")
+                                statusColor = "bg-[#12B886]";
+                              else if (status === "Offered")
+                                statusColor = "bg-[#40C057]";
+                              else if (status === "Accepted")
+                                statusColor = "bg-[#2F9E44]";
+                              else if (status === "Onboarded")
+                                statusColor = "bg-[#2F9E44]";
+                              else if (status === "Rejected")
+                                statusColor = "bg-[#FA5252]";
+                              else if (status === "Hold")
+                                statusColor = "bg-[#FD7E14]";
+                              else statusColor = "bg-[#CED4DA]";
+
+                              return (
+                                <div key={i} className="relative group">
+                                  <div
+                                    className={`h-[20px] w-[20px] rounded-full text-white ${statusColor} border border-white ml-[5px] cursor-pointer`}
+                                    title={status}
+                                  />
+                                  {/* Tooltip Popup */}
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-[#E5E5E5] rounded-lg shadow-xl p-4 hidden group-hover:block z-[100]">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <div>
+                                        <p className="text-[14px] font-semibold text-[#1C1C1C]">
+                                          {candidate.candidateName}
+                                        </p>
+                                        <p className="text-[12px] text-[#6C6E70]">
+                                          {candidate.candidateEmail}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="space-y-1 mb-3">
+                                      <div className="flex justify-between text-[12px]">
+                                        <span className="text-[#6C6E70]">
+                                          Experience:
+                                        </span>
+                                        <span className="font-medium">
+                                          {candidate?.candidateExperience}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between text-[12px]">
+                                        <span className="text-[#6C6E70]">
+                                          Exp. CTC:
+                                        </span>
+                                        <span className="font-medium">
+                                          {candidate?.candidateExpectedCTC}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between text-[12px]">
+                                        <span className="text-[#6C6E70]">
+                                          Status:
+                                        </span>
+                                        <span className="font-medium">
+                                          {
+                                            candidate
+                                              ?.candidateStatusTimeline?.[
+                                              candidate?.candidateStatusTimeline
+                                                ?.length - 1
+                                            ]
+                                          }
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <button
+                                      className="w-full py-1.5 bg-[#5B6ACF] text-white text-[12px] rounded hover:bg-[#4854c7] transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowResumePopUp(true);
+                                      }}
+                                    >
+                                      View Resume
+                                    </button>
+
+                                    {/* Arrow tail */}
+                                    <div className="absolute left-1/2 -top-[5px] -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-[#E5E5E5] transform rotate-45"></div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() =>
+                          handleUpdateStatus(
+                            candidate._id,
+                            candidate.candidateStatusTimeline
+                          )
+                        }
+                        disabled={
+                          candidate.candidateStatusTimeline?.[
+                            candidate.candidateStatusTimeline.length - 1
+                          ] === "Rejected"
+                        }
+                        className={`text-[12px] px-2 py-[4px] rounded border transition-all ${
+                          candidate.candidateStatusTimeline?.[
+                            candidate.candidateStatusTimeline.length - 1
+                          ] === "Rejected"
+                            ? "text-[#A6A6A6] border-[#D9D9D9] bg-[#F5F5F5] cursor-not-allowed opacity-60"
+                            : "text-[#6C6E70] border-[#6C6E70] hover:bg-[#F5F5F5] cursor-pointer"
+                        }`}
+                      >
+                        Update Status
+                      </button>
+                    </div>
+                  )
+                )}
               </div>
             ) : (
               <p className="text-[14px]">Profiles 0</p>
             )}
 
             {/* Duration */}
-            {showDuration && (
+            {!isStarted && showDuration && (
               <div>
                 <p className="text-[14px] text-[#2F9E44] font-medium">
-                  {oneResource.demandDurationId.tentativeDuration}
+                  {updatedResource.demandDurationId.tentativeDuration}
                 </p>
                 <p className="text-[12px] text-[#6C6E70]">
                   {formatDateOnly(
-                    oneResource.demandDurationId.billingStartDate
+                    updatedResource.demandDurationId.billingStartDate
                   )}{" "}
                   -{" "}
                   {formatDateOnly(
-                    oneResource.demandDurationId.billingStartDate
+                    updatedResource.demandDurationId.billingStartDate
                   )}
                 </p>
 
@@ -581,7 +474,7 @@ export default function ResouceComponents(props) {
                   className="inline-block mt-2 px-3 py-[4px] text-[12px] rounded bg-[#2F9E44] text-white cursor-pointer"
                 >
                   {getStartMessage(
-                    oneResource.demandDurationId.billingStartDate
+                    updatedResource.demandDurationId.billingStartDate
                   )}
                 </button>
               </div>
@@ -591,6 +484,14 @@ export default function ResouceComponents(props) {
             <div className="flex justify-end">
               <span className="cursor-pointer">⋮</span>
             </div>
+          </div>
+          <div className="px-6 py-2 flex justify-end">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-3 py-1.5 text-[12px] font-medium text-white bg-[#5B6ACF] rounded hover:bg-[#4854c7] transition-colors"
+            >
+              Add Profiles
+            </button>
           </div>
 
           {/* Footer */}
@@ -819,6 +720,69 @@ export default function ResouceComponents(props) {
           </div>
         </div>
       )}
+      {showStatusModal && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-[12px] shadow-2xl w-[400px] p-6">
+            <h3 className="text-[18px] font-semibold text-[#1C1C1C] mb-4">
+              Update Candidate Status
+            </h3>
+            <p className="text-[14px] text-[#6C6E70] mb-4">
+              Select the round for the candidate:
+            </p>
+            <div className="grid grid-cols-1 gap-2 mb-6 max-h-[300px] overflow-y-auto pr-2">
+              {[
+                "Screening_Scheduled",
+                "Interview_Scheduled",
+                "Interview_Cleared",
+                "HR_Cleared",
+                "Offered",
+                "Accepted",
+                "Onboarded",
+                "Rejected",
+                "Hold",
+              ].map((status) => (
+                <label
+                  key={status}
+                  className={`flex items-center px-4 py-3 rounded-lg border cursor-pointer transition-all ${
+                    selectedStatus === status
+                      ? "border-[#5B6ACF] bg-[#5B6ACF]/5 text-[#5B6ACF]"
+                      : "border-[#E5E5E5] hover:border-[#5B6ACF]/50"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="candidateStatus"
+                    value={status}
+                    checked={selectedStatus === status}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="hidden"
+                  />
+                  <span className="text-[14px] font-medium">
+                    {status.replace("_", " ")}
+                  </span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => {
+                  setShowStatusModal(false);
+                  setSelectedStatus("");
+                }}
+                className="px-4 py-2 text-[14px] rounded bg-[#BFBFBF] text-white hover:bg-[#A6A6A6] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleStatusSubmit}
+                className="px-6 py-2 text-[14px] rounded bg-[#5B6ACF] text-white hover:bg-[#4A59B8] transition-colors"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showResumePopUp && (
         <ResumePopUp
           onClose={() => setShowResumePopUp(false)}
@@ -828,3 +792,73 @@ export default function ResouceComponents(props) {
     </>
   );
 }
+
+// const sampleJsonCandidates = [
+//   {
+//     name: "John Wick",
+//     email: "rashi.sharma@example.com",
+//     phone: "1234567890",
+//     resume: "resume.pdf",
+//     coverLetter: "cover-letter.pdf",
+//     status: "Interviewed",
+//     interviewDate: "2023-01-01",
+//     interviewer: "John Doe",
+//     notes: "Candidate is a good fit for the role.",
+//     experience: "5 years",
+//     "Exp CTC": "500000 INR",
+//     currentProfileStatusList: [
+//       "Screening",
+//       "Shortlisted",
+//       "Interviewed",
+//       "Offered",
+//       "Hired",
+//     ],
+//   },
+//   {
+//     name: "Krunal Sharma",
+//     email: "rashi.sharma@example.com",
+//     phone: "1234567890",
+//     resume: "resume.pdf",
+//     coverLetter: "cover-letter.pdf",
+//     status: "Interviewed",
+//     interviewDate: "2023-01-01",
+//     interviewer: "John Doe",
+//     notes: "Candidate is a good fit for the role.",
+//     experience: "5 years",
+//     "Exp CTC": "500000 INR",
+//     currentProfileStatusList: ["Screening", "Shortlisted"],
+//   },
+//   {
+//     name: "Steave Smith",
+//     email: "rashi.sharma@example.com",
+//     phone: "1234567890",
+//     resume: "resume.pdf",
+//     coverLetter: "cover-letter.pdf",
+//     status: "Interviewed",
+//     interviewDate: "2023-01-01",
+//     interviewer: "John Doe",
+//     notes: "Candidate is a good fit for the role.",
+//     experience: "5 years",
+//     "Exp CTC": "500000 INR",
+//     currentProfileStatusList: [
+//       "Screening",
+//       "Shortlisted",
+//       "Interviewed",
+//       "Rejected",
+//     ],
+//   },
+//   {
+//     name: "Cameron Green",
+//     email: "rashi.sharma@example.com",
+//     phone: "1234567890",
+//     resume: "resume.pdf",
+//     coverLetter: "cover-letter.pdf",
+//     status: "Interviewed",
+//     interviewDate: "2023-01-01",
+//     interviewer: "John Doe",
+//     notes: "Candidate is a good fit for the role.",
+//     experience: "5 years",
+//     "Exp CTC": "500000 INR",
+//     currentProfileStatusList: ["Screening", "Shortlisted"],
+//   },
+// ];

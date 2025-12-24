@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -52,18 +51,14 @@ const PublicRoute = ({ children }) => {
 
 // MainLayout Component
 const MainLayout = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(true);
-
   return (
-    <div className="h-screen grid grid-rows-[80px_1fr]">
-      <Header toggleSidebar={() => setIsOpen(!isOpen)} />
-      <div
-        className={`grid transition-all duration-300 ${
-          isOpen ? "grid-cols-[200px_1fr]" : "grid-cols-[80px_1fr]"
-        }`}
-      >
-        <Sidebar isOpen={isOpen} />
-        <main className="p-6 overflow-y-auto bg-gray-50">{children}</main>
+    <div className="h-screen w-screen grid grid-rows-[80px_1fr] overflow-hidden">
+      <Header />
+      <div className="grid grid-cols-[80px_1fr] overflow-hidden">
+        <Sidebar />
+        <main className="p-6 bg-gray-50 h-[calc(100vh-80px)] overflow-y-auto">
+          {children}
+        </main>
       </div>
     </div>
   );

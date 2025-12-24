@@ -33,7 +33,7 @@ export const authService = {
     }
   },
 
-  // Verify OTP API - Need to send both user OTP and hash OTP
+  // Verify OTP API - Need to send both user OTP and hash OTP 
   async verifyOtp(email, userOtp, hashOTP) {
     try {
       const response = await fetch(`${API_BASE_URL}/verify-OTP`, {
@@ -99,7 +99,7 @@ export const authService = {
   },
 
   // Register API - Need to include OTP verification data
-  async register(userData, hashOTP, userOtp) {
+  async register(userData) {
     console.log(userData)
     try {
       const response = await fetch(`${API_BASE_URL}/addUser`, {
@@ -143,7 +143,7 @@ export const authService = {
       await fetch(`${API_BASE_URL}/logoutUser`, {
         method: 'POST',
         headers: {
-          'Authorization': `${token}`,
+          'authorization': `${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token }),
@@ -167,7 +167,7 @@ export const authService = {
       body: JSON.stringify({
         authorization: `${token}` // Send in body with Bearer prefix
       }),
-
+      
     });
     
     const data = await response.json();

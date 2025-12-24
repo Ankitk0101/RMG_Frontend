@@ -1,17 +1,13 @@
-import React from 'react';
-import DashboardLayout from '../components/Dashboard/DashboardLayout';
-import {getAllResource} from '../services/resourceApi'
+import React from "react";
+import DashboardLayout from "../components/Dashboard/DashboardLayout";
 
 const DashboardPage = () => {
- 
-    // const data = getAllResource()
-    //  console.log(data)
+  // const data = getAllResource()
+  //  console.log(data)
 
   return (
     <div className="space-y-6">
       <DashboardLayout />
-   
-
     </div>
   );
 };

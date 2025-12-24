@@ -1,21 +1,21 @@
 const API_BASE_URL = 'http://localhost:5000/api/resource/';
 
-const getAuthHeaders = () => {
-  console.log('getAuthHeaders called');
-  const token = localStorage.getItem('token');
-  console.log('token in getAuthHeaders', token);
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+// const getAuthHeaders = () => {
+//   console.log('getAuthHeaders called');
+//   const token = localStorage.getItem('token');
+//   console.log('token in getAuthHeaders', token);
+//   const headers = {
+//     'Content-Type': 'application/json',
+//   };
   
-  if (token) {
-    headers['authorization'] = token;
-  } else {
-    console.warn('No token found in localStorage');
-  }
+//   if (token) {
+//     headers['authorization'] = token;
+//   } else {
+//     console.warn('No token found in localStorage');
+//   }
   
-  return headers;
-};
+//   return headers;
+// };
 
 const handleResponse = async (response) => {
   console.log('handleResponse called');
@@ -85,6 +85,30 @@ export const uploadResume = async (formData,) => {
     };
   } catch (error) {
     console.log("error in uploadResume", error);
+    return handleApiError(error);
+  }
+};
+
+export const updateResumeStatus = async (resumeId, updatedCandidateStatusTimeline) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:5000/api/resume/update-candidate-resume/${resumeId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token,
+      },
+      body: JSON.stringify({ candidateStatusTimeline: updatedCandidateStatusTimeline }),
+    });
+    console.log('response in updateResumeStatus', response);
+    const responseData = await handleResponse(response);
+    return {
+      success: true,
+      data: responseData,
+      message: "Status updated successfully",
+    };
+  } catch (error) {
+    console.error("error in updateResumeStatus", error);
     return handleApiError(error);
   }
 };
