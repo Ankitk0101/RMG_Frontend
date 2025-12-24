@@ -11,14 +11,14 @@ const DashboardLayout = () => {
     { label: "Interview Selection", value: "10035", color: "bg-orange-500" },
   ];
 
-  const statusData = [
-    { label: "Added", value: "682", color: "bg-blue-500" },
-    { label: "Pending", value: "258", color: "bg-yellow-500" },
-    { label: "Fulfilled", value: "359", color: "bg-green-500" },
-    { label: "Kept on hold", value: "33", color: "bg-orange-500" },
-    { label: "Inactive Closed", value: "27", color: "bg-gray-500" },
-    { label: "Could Not fulfill", value: "5", color: "bg-red-500" },
-  ];
+  // const statusData = [
+  //   { label: "Added", value: "682", color: "bg-blue-500" },
+  //   { label: "Pending", value: "258", color: "bg-yellow-500" },
+  //   { label: "Fulfilled", value: "359", color: "bg-green-500" },
+  //   { label: "Kept on hold", value: "33", color: "bg-orange-500" },
+  //   { label: "Inactive Closed", value: "27", color: "bg-gray-500" },
+  //   { label: "Could Not fulfill", value: "5", color: "bg-red-500" },
+  // ];
 
   return (
     <div className="space-y-6">

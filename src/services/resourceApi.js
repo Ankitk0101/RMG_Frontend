@@ -187,3 +187,20 @@ export const uploadFile = async (formData) => {
     return handleApiError(error);
   }
 };
+
+export const getDashboardStats = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}get-dashboard-stats`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    const responseData = await handleResponse(response);
+    return {
+      success: true,
+      data: responseData
+    };
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+    

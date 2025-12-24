@@ -37,7 +37,7 @@ const Sidebar = () => {
     <aside className="bg-white border-r border-[#D9D9D9] py-6 transition-all duration-300 h-full flex flex-col">
       {/* Menu Items */}
       <div className="flex-1 overflow-y-auto mt-2">
-        {menuItems.map(({ label, path }) => (
+        {menuItems.map(({ icon: Icon, label, path }) => (
           <NavLink
             key={label}
             to={path}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getCreatedOnStatusTableData } from "../../services/dashboardAnalyticsService";
 
 const DemandTable = () => {
   // const tableData = [
@@ -25,12 +26,9 @@ const DemandTable = () => {
   useEffect(() => {
     const fetchTableData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/aggregation/demand/status-created-on"
-        );
-        const objectData = await response.json();
-        console.log("data for demandTable -> ", objectData);
-        setDemandTableData(objectData.data);
+        const response = await getCreatedOnStatusTableData();
+        console.log("data for demandTable -> ", response);
+        setDemandTableData(response.data.data);
       } catch (error) {
         console.error("Error fetching table data:", error);
       }
