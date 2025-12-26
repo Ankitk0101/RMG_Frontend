@@ -185,84 +185,68 @@ const AddResourcePage = () => {
     }
 
     // Special validation for L2 Payment Confirmation
-    if (formData.demandBudgetInfo.paymentConformation === "L2") {
-      if (!formData.fileUploads?.paymentConfirmationDocumentPath) {
-        newErrors.paymentConfirmationDocumentPath =
-          "Payment confirmation document is required for L2";
-      }
-    }
+ if (formData.demandBudgetInfo.paymentConformation === "L2") {
+  const files = formData.fileUploads?.paymentConfirmationDocumentPath;
+  if (!files || files.length === 0) {
+    newErrors.paymentConfirmationDocumentPath =
+      "Payment confirmation document is required for L2";
+  }
+}
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+   setErrors(newErrors);
+
+  return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
-    setSubmitMessage("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("call handle ")
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) return;
 
-    if (!validateForm()) {
-      const errorarray = Object.keys(errors);
-      console.log("Validation errors:", errorarray);
-      alert(`Please fill this field: ${errorarray[0]}`);
-      return;
+  setIsSubmitting(true);
+
+  try {
+    const payload = new FormData();
+
+    // JSON data (without files)
+    const jsonData = {
+      ...formData,
+      fileUploads: undefined,
+    };
+
+    payload.append("data", JSON.stringify(jsonData));
+
+    // File only if L2
+    if (
+      formData.demandBudgetInfo.paymentConformation === "L2" &&
+      formData.fileUploads?.paymentConfirmationDocumentPath?.length > 0
+    ) {
+      payload.append(
+        "paymentConfirmationDocument",
+        formData.fileUploads.paymentConfirmationDocumentPath[0]
+      );
     }
+    console.log("Form Data in add Resource Page befor sending data to addResources ->  " , formData)
+     console.log("this pay load data value",payload)
+     const result = await addResources(payload);
 
-    setIsSubmitting(true);
-
-    try {
-      console.log("Submitting form data:", formData);
-
-      // Prepare data for API
-      const apiData = {
-        ...formData,
-        demandBudgetInfo: {
-          ...formData.demandBudgetInfo,
-          paymentConformationDocumentPath: formData.fileUploads
-            ?.paymentConfirmationDocumentPath
-            ? formData.fileUploads.paymentConfirmationDocumentPath[0]?.name
-            : "",
-        },
-      };
-
-      // Call API and WAIT for response
-      const result = await addResources(apiData);
-
-      console.log("API Response:", result);
-
-      if (result.success) {
-        setSubmitMessage("success");
-        alert("Resource added successfully!");
-        // Reset form after successful submission
-        setFormData(emptyFormData);
-        setErrors({});
-        // Redirect to iteration page
-        navigate("/iteration");
-      } else {
-        setSubmitMessage("error");
-
-        // Handle 401 (session expired)
-        if (result.status === 401) {
-          if (
-            window.confirm(
-              "Your session has expired. Would you like to login again?"
-            )
-          ) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.location.href = "/login";
-          }
-        } else {
-          alert(`Failed to add resource: ${result.message}`);
-        }
-      }
-    } catch (error) {
-      setSubmitMessage("error");
-      console.error("Error submitting form:", error);
-      alert("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (result.success) {
+      alert("Resource added successfully!");
+      navigate("/iteration");
+    } else {
+      alert(result.message);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Unexpected error");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+
 
   const handleInputChange = (section, field, value) => {
     setFormData((prev) => ({

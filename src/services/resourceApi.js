@@ -2,20 +2,22 @@
 const API_BASE_URL = 'http://localhost:5000/api/resource/';
 
 
+// const getAuthHeaders = () => {
+//   const token = localStorage.getItem('token');
+//   return {
+//     'Content-Type': 'application/json',
+//     authorization: token,
+//   };
+// };
+
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
+  console.log(token)
+  return {
+    authorization: token,  
   };
-  
-  if (token) {
-    headers['authorization'] = token;
-  } else {
-    console.warn('No token found in localStorage');
-  }
-  
-  return headers;
 };
+
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
@@ -54,33 +56,31 @@ const handleApiError = (error) => {
   };
 };
 
-export const addResources = async (data) => {
+export const addResources = async (formData) => {
+  console.log("Form Data in addResources resoureApoi -> " , formData)
   try {
-    const tokenBeforeRequest = localStorage.getItem('token');
-    console.log("this main toaken ",tokenBeforeRequest)
-    const payload = { ...data, authorization: tokenBeforeRequest };
-    
-    console.log('Sending data:', payload);
-
-    console.log("this auth header function",getAuthHeaders())
-
+     
     const response = await fetch(`${API_BASE_URL}add-resource`, {
       method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload),
+      headers: getAuthHeaders(), 
+      body: formData,  
     });
 
     const responseData = await handleResponse(response);
-    
+    console.log("add success")
     return {
       success: true,
       data: responseData,
-      message: 'Resource added successfully'
+      message: 'Resource added successfully',
     };
   } catch (error) {
     return handleApiError(error);
   }
 };
+
+
+
+
 
 export const getAllResource = async () => {
   console.log("Get all resource called")

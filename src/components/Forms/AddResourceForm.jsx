@@ -1,13 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import FormInput from "./FormInput";
 
 const AddResourceForm = ({
   formData = {},
   errors = {},
-  onInputChange = () => {},
-  onFileUpload = () => {},
+  onInputChange = () => { },
+  onFileUpload = () => { },
 }) => {
   const [uploadedFiles, setUploadedFiles] = useState({});
+  const inputRefs = useRef({});
+
+
+
+  useEffect(() => {
+    const errorKeys = Object.keys(errors);
+
+    if (errorKeys.length > 0) {
+      const firstErrorField = errorKeys[0];
+      const element = inputRefs.current[firstErrorField];
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        element.focus();
+      }
+    }
+  }, [errors]);
 
   // Check if L2 is selected for file upload condition
   const showFileUpload =
@@ -634,10 +654,14 @@ const AddResourceForm = ({
                     <div key={fieldIndex}>
                       <FormInput
                         {...field}
+                        inputRef={(el) => {
+                          if (el) inputRefs.current[field.field] = el;
+                        }}
                         onChange={(value) =>
                           handleFieldChange(section.key, field.field, value)
                         }
                       />
+
                     </div>
                   ))}
                 </div>
@@ -698,6 +722,11 @@ const AddResourceForm = ({
                         </p>
                       </div>
                     </div>
+                    {errors.paymentConfirmationDocumentPath && (
+                      <p className="text-sm text-red-600 mt-2">
+                        {errors.paymentConfirmationDocumentPath}
+                      </p>
+                    )}
                     {uploadedFiles.paymentConfirmationDocumentPath && (
                       <div className="mt-3">
                         <p className="text-sm text-green-600 font-medium">

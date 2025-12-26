@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { HelpCircle, AlertCircle, Upload, X } from 'lucide-react';
 
-const FormInput = ({ 
-  label, 
-  description, 
-  type = 'text', 
+const FormInput = ({
+  label,
+  description,
+  type = 'text',
   field,
   value,
   error,
+  inputRef,
   options = [],
   required = false,
   placeholder = '',
@@ -36,7 +37,7 @@ const FormInput = ({
     } else {
       newValue = e.target.value;
     }
-    
+
     setIsTouched(true);
     if (onChange) {
       onChange(newValue);
@@ -64,19 +65,19 @@ const FormInput = ({
   const showError = isTouched && error;
 
   const renderInput = () => {
-    const commonClasses = `w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-all text-sm ${
-      showError 
-        ? 'border-red-500 focus:ring-red-300 bg-red-50' 
-        : isFocused 
-          ? 'border-blue-500 focus:ring-blue-300 focus:border-blue-500 bg-white' 
+    const commonClasses = `w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-all text-sm ${showError
+        ? 'border-red-500 focus:ring-red-300 bg-red-50'
+        : isFocused
+          ? 'border-blue-500 focus:ring-blue-300 focus:border-blue-500 bg-white'
           : 'border-gray-300 bg-gray-50 hover:bg-white'
-    }`;
+      }`;
 
     switch (type) {
       case 'select':
         return (
           <select
             className={commonClasses}
+            ref={inputRef}
             value={value || ''}
             onChange={handleChange}
             onFocus={handleFocus}
@@ -90,11 +91,12 @@ const FormInput = ({
             ))}
           </select>
         );
-      
+
       case 'textarea':
         return (
           <textarea
             className={`${commonClasses} resize-vertical`}
+            ref={inputRef}
             value={value || ''}
             onChange={handleChange}
             onFocus={handleFocus}
@@ -104,11 +106,12 @@ const FormInput = ({
             required={required}
           />
         );
-      
+
       case 'date':
         return (
           <input
             type="date"
+            ref={inputRef}
             className={commonClasses}
             value={value || ''}
             onChange={handleChange}
@@ -117,11 +120,12 @@ const FormInput = ({
             required={required}
           />
         );
-      
+
       case 'number':
         return (
           <input
             type="number"
+            ref={inputRef}
             className={commonClasses}
             value={value || ''}
             onChange={handleChange}
@@ -134,11 +138,12 @@ const FormInput = ({
             required={required}
           />
         );
-      
+
       case 'tel':
         return (
           <input
             type="tel"
+            ref={inputRef}
             className={commonClasses}
             value={value || ''}
             onChange={handleChange}
@@ -149,7 +154,7 @@ const FormInput = ({
             required={required}
           />
         );
-      
+
       case 'file':
         return (
           <div className="space-y-3">
@@ -173,7 +178,7 @@ const FormInput = ({
                 />
               </label>
             </div>
-            
+
             {selectedFiles.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium text-gray-700">Selected files:</p>
@@ -207,11 +212,12 @@ const FormInput = ({
             )}
           </div>
         );
-      
+
       default:
         return (
           <input
             type={type}
+            ref={inputRef}
             className={commonClasses}
             value={value || ''}
             onChange={handleChange}
@@ -229,9 +235,8 @@ const FormInput = ({
     <div className="space-y-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <label className={`block text-sm font-medium ${
-            showError ? 'text-red-700' : 'text-gray-700'
-          }`}>
+          <label className={`block text-sm font-medium ${showError ? 'text-red-700' : 'text-gray-700'
+            }`}>
             {label}
           </label>
           {required && <span className="text-red-500 ml-0.5">*</span>}
@@ -249,9 +254,9 @@ const FormInput = ({
           <span className="text-xs text-gray-500">Optional</span>
         )}
       </div>
-      
+
       {renderInput()}
-      
+
       {/* Error message */}
       {showError && (
         <div className="flex items-center gap-1 text-red-600 text-xs mt-1 animate-pulse">
@@ -259,14 +264,14 @@ const FormInput = ({
           <span>{error}</span>
         </div>
       )}
-      
+
       {/* Character count for textarea */}
       {type === 'textarea' && (
         <div className="text-xs text-gray-500 text-right">
           {value?.length || 0} characters
         </div>
       )}
-      
+
       {/* Description */}
       {description && !options.length && (
         <p className="text-xs text-gray-500 mt-1">{description}</p>
