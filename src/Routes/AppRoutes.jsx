@@ -15,6 +15,7 @@ import ClientPage from "../pages/ClientPage";
 import AddResourcePage from "../pages/AddResourcePage";
 import PageNotFound from "../pages/PageNotFound";
 import IterationPage from "../pages/IterationPage";
+import KYCPage from "../pages/KYCPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -213,6 +214,17 @@ function AppRoutes() {
               <ProtectedRoute>
                 <MainLayout>
                   <IterationPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/kyc/:id"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <KYCPage />
                 </MainLayout>
               </ProtectedRoute>
             }

@@ -78,7 +78,7 @@ const Sidebar = () => {
       </div>
 
       {/* Footer Section */}
-      <div className="mt-auto px-2 py-4 border-t border-gray-100">
+      {/* <div className="mt-auto px-2 py-4 border-t border-gray-100">
         {user ? (
           <button
             onClick={handleLogout}
@@ -105,7 +105,7 @@ const Sidebar = () => {
             </NavLink>
           </div>
         )}
-      </div>
+      </div> */}
     </aside>
   );
 };

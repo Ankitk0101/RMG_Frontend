@@ -145,25 +145,32 @@ export default function RequestsFlowChart() {
             }}
           />
           {/* Bars – exact Figma shades */}
-          <Bar dataKey="Added" fill="#3B82F6" radius={[4, 4, 0, 0]} />{" "}
-          {/* Blue */}
-          <Bar dataKey="Pending" fill="#FACC15" radius={[4, 4, 0, 0]} />{" "}
-          {/* Yellow */}
-          <Bar dataKey="Fulfilled" fill="#22C55E" radius={[4, 4, 0, 0]} />{" "}
-          {/* Green */}
+          <Bar dataKey="Added" fill="#7AA2F7" radius={[4, 4, 0, 0]} />{" "}
+          {/* Soft Blue */}
+          <Bar dataKey="Pending" fill="#EAC54F" radius={[4, 4, 0, 0]} />{" "}
+          {/* Muted Yellow */}
+          <Bar dataKey="Fulfilled" fill="#6FCF97" radius={[4, 4, 0, 0]} />{" "}
+          {/* Medium Green */}
           <Bar
             dataKey="Kept on hold"
-            fill="#FB923C"
+            fill="#F2994A"
             radius={[4, 4, 0, 0]}
           />{" "}
-          {/* Orange */}
-          <Bar dataKey="Inactive Closed" fill="#6B7280" radius={[4, 4, 0, 0]} />
-          {/* Gray */}
+          {/* Soft Orange */}
+          <Bar
+            dataKey="Inactive Closed"
+            fill="#9CA3AF"
+            radius={[4, 4, 0, 0]}
+          />{" "}
+          {/* Neutral Gray */}
           <Bar
             dataKey="Could Not fulfill"
-            fill="#A8A8A8"
+            fill="#B0B0B0"
             radius={[4, 4, 0, 0]}
           />
+          {/* Medium Silver */}
+          {/* Soft Silver */}
+          {/* Very Light Gray */}
           {/* Light Gray */}
         </BarChart>
       </ResponsiveContainer>
