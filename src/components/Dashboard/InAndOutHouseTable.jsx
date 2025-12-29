@@ -25,9 +25,11 @@ const InAndOutHouseTable = ({ resourceType }) => {
 
   return (
     <div className="w-[1136px] bg-white border border-[#D9D9D9] rounded-[8px] overflow-hidden">
-      <div className="text-center text-[20px] text-[#585858] py-3 border-b border-[#E5E5E5]">
+      <div className="text-center text-[20px] font-medium text-[#585858] py-3 border-b border-[#E5E5E5]">
         By Profile ({resource}){" "}
-        <span className="text-[#6C6E70]">(Based on created on)</span>
+        <span className="text-[#585858] font-normal text-[16px]">
+          (Based on created on)
+        </span>
       </div>
       <table className="w-full border-collapse text-[13px] text-[#1C1C1C]">
         <thead>

@@ -20,8 +20,11 @@ const DemandTable = () => {
   return (
     <div className="w-[1136px] h-auto border border-[#D9D9D9] rounded-[8px] overflow-hidden bg-white">
       {/* Title */}
-      <div className="text-center text-[20px] text-[#585858] py-3 border-b border-[#E5E5E5]">
-        By Status <span className="text-[#6C6E70]">(Based on created on)</span>
+      <div className="text-center text-[20px] font-medium text-[#585858] py-3 border-b border-[#E5E5E5]">
+        By Status{" "}
+        <span className="text-[#585858] font-normal text-[16px]">
+          (Based on created on)
+        </span>
       </div>
 
       <table className="w-full border-collapse text-[12px] text-[#1C1C1C]">

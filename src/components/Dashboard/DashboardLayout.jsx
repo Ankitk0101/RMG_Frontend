@@ -3,7 +3,7 @@ import StatsCards from "./StatsCards";
 import DemandChart from "./DemandChart";
 import DemandTable from "./DemandTable";
 import InAndOutHouseTable from "./InAndOutHouseTable";
-
+import ByStatusUpdatedOnTable from "./ByStatusUpdatedOnTable";
 const DashboardLayout = () => {
   const statsData = [
     { label: "Total Demand", value: "10035", color: "bg-blue-500" },
@@ -76,6 +76,9 @@ const DashboardLayout = () => {
         {/* Table Section */}
         <div className="p-6 flex justify-center">
           <DemandTable />
+        </div>
+        <div className="p-6 flex justify-center">
+          <ByStatusUpdatedOnTable />
         </div>
         <div className="p-6 flex justify-center">
           <InAndOutHouseTable resourceType="Internal" />

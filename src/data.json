@@ -108,5 +108,208 @@
                 "scheduled": 0
             }
         }
+    ],
+    "DashboardByCategoryAndBudgetAndDemandTypeAndRegionData":[
+        {
+            "demandUpdated": 2,
+            "month": "Aug-25",
+            "category": {
+                "standard": 0,
+                "premium": 0,
+                "niche": 0,
+                "superNiche": 0
+            },
+            "budget": {
+                "belowB1": 2,
+                "B1": 0,
+                "B2": 0,
+                "B3": 0,
+                "aboveB3": 0
+            },
+            "demandType": {
+                "client": 0,
+                "lead": 0,
+                "package": 0
+            }
+        },
+        {
+            "demandUpdated": 2,
+            "month": "Dec-25",
+            "category": {
+                "standard": 0,
+                "premium": 0,
+                "niche": 0,
+                "superNiche": 0
+            },
+            "budget": {
+                "belowB1": 2,
+                "B1": 0,
+                "B2": 0,
+                "B3": 0,
+                "aboveB3": 0
+            },
+            "demandType": {
+                "client": 0,
+                "lead": 0,
+                "package": 0
+            }
+        },
+        {
+            "demandUpdated": 2,
+            "month": "Jul-25",
+            "category": {
+                "standard": 0,
+                "premium": 0,
+                "niche": 0,
+                "superNiche": 0
+            },
+            "budget": {
+                "belowB1": 2,
+                "B1": 0,
+                "B2": 0,
+                "B3": 0,
+                "aboveB3": 0
+            },
+            "demandType": {
+                "client": 0,
+                "lead": 0,
+                "package": 0
+            }
+        },
+        {
+            "demandUpdated": 3,
+            "month": "Nov-25",
+            "category": {
+                "standard": 0,
+                "premium": 0,
+                "niche": 0,
+                "superNiche": 0
+            },
+            "budget": {
+                "belowB1": 3,
+                "B1": 0,
+                "B2": 0,
+                "B3": 0,
+                "aboveB3": 0
+            },
+            "demandType": {
+                "client": 0,
+                "lead": 0,
+                "package": 0
+            }
+        },
+        {
+            "demandUpdated": 2,
+            "month": "Oct-25",
+            "category": {
+                "standard": 0,
+                "premium": 0,
+                "niche": 0,
+                "superNiche": 0
+            },
+            "budget": {
+                "belowB1": 2,
+                "B1": 0,
+                "B2": 0,
+                "B3": 0,
+                "aboveB3": 0
+            },
+            "demandType": {
+                "client": 0,
+                "lead": 0,
+                "package": 0
+            }
+        },
+        {
+            "demandUpdated": 2,
+            "month": "Sep-25",
+            "category": {
+                "standard": 0,
+                "premium": 0,
+                "niche": 0,
+                "superNiche": 0
+            },
+            "budget": {
+                "belowB1": 2,
+                "B1": 0,
+                "B2": 0,
+                "B3": 0,
+                "aboveB3": 0
+            },
+            "demandType": {
+                "client": 0,
+                "lead": 0,
+                "package": 0
+            }
+        }
+    ],
+    "DashboardByStatusUpdatedOnData":[
+        {
+        "srNo":1,
+        "month":"Oct-25",
+        "demandUpdated":682,
+        "currentStatusOfDemand":{
+            "keepOnHold":0,
+            "inactiveClosed":682,
+            "couldNotFulfill":2,
+            "fulfilled":170
+        }
+    },
+    {
+        "srNo":2,
+        "month":"Oct-25",
+        "demandUpdated":682,
+        "currentStatusOfDemand":{
+            "keepOnHold":0,
+            "inactiveClosed":682,
+            "couldNotFulfill":2,
+            "fulfilled":170
+        }
+    },
+    {
+        "srNo":3,
+        "month":"Oct-25",
+        "demandUpdated":682,
+        "currentStatusOfDemand":{
+            "keepOnHold":0,
+            "inactiveClosed":682,
+            "couldNotFulfill":2,
+            "fulfilled":170
+        }
+    },
+    {
+        "srNo":4,
+        "month":"Oct-25",
+        "demandUpdated":682,
+        "currentStatusOfDemand":{
+            "keepOnHold":0,
+            "inactiveClosed":682,
+            "couldNotFulfill":2,
+            "fulfilled":170
+        }
+    },
+    {
+        "srNo":5,
+        "month":"Oct-25",
+        "demandUpdated":682,
+        "currentStatusOfDemand":{
+            "keepOnHold":0,
+            "inactiveClosed":682,
+            "couldNotFulfill":2,
+            "fulfilled":170
+        }
+    },
+    {
+        "srNo":6,
+        "month":"Oct-25",
+        "demandUpdated":682,
+        "currentStatusOfDemand":{
+            "keepOnHold":0,
+            "inactiveClosed":682,
+            "couldNotFulfill":2,
+            "fulfilled":170
+        }
+    }
+
     ]
 }

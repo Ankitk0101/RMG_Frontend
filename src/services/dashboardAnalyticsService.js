@@ -115,9 +115,9 @@ const getByStatusUpdatedOnTableData = async () => {
   }
 };
 
-const getInAndOutHouseTableData = async (house) => {
+const getByCategoryAndBudgetAndDemandTypeAndRegionTableData = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}in-and-out-house-table-data/:${house}`, {
+    const response = await fetch(`${API_BASE_URL}category-budget-demand-type-region-table-data`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -131,4 +131,20 @@ const getInAndOutHouseTableData = async (house) => {
   }
 };
 
-export { getDashboardStats, getByStatusCreatedOnTableData, getByStatusUpdatedOnTableData ,getFlowChartData, getInAndOutHouseTableData};
+const getInAndOutHouseTableData = async (resourceType) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}in-and-out-house-table-data/:${resourceType}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    const responseData = await handleResponse(response);
+    return {
+      success: true,
+      data: responseData
+    };
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+export { getDashboardStats, getFlowChartData, getByStatusCreatedOnTableData, getByStatusUpdatedOnTableData , getByCategoryAndBudgetAndDemandTypeAndRegionTableData, getInAndOutHouseTableData};
