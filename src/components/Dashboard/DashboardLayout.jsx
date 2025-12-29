@@ -4,6 +4,8 @@ import DemandChart from "./DemandChart";
 import DemandTable from "./DemandTable";
 import InAndOutHouseTable from "./InAndOutHouseTable";
 import ByStatusUpdatedOnTable from "./ByStatusUpdatedOnTable";
+import ByCategoryAndBudgetTable from "./ByCategoryAndBudgetTable";
+
 const DashboardLayout = () => {
   const statsData = [
     { label: "Total Demand", value: "10035", color: "bg-blue-500" },
@@ -79,6 +81,9 @@ const DashboardLayout = () => {
         </div>
         <div className="p-6 flex justify-center">
           <ByStatusUpdatedOnTable />
+        </div>
+        <div className="p-6 flex justify-center">
+          <ByCategoryAndBudgetTable />
         </div>
         <div className="p-6 flex justify-center">
           <InAndOutHouseTable resourceType="Internal" />

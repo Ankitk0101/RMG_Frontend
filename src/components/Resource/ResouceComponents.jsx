@@ -551,6 +551,14 @@ export default function ResouceComponents(props) {
               </div>
             </div>
             <div className="px-6 py-2 flex justify-end">
+              <Link to={`/kyc/${updatedResource._id}`}>
+                <button
+                  onClick={""}
+                  className="px-3 py-1.5 text-[12px] font-medium text-white bg-[#5B6ACF] rounded hover:bg-[#4854c7] transition-colors mr-1"
+                >
+                  View KYC
+                </button>
+              </Link>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -820,21 +828,26 @@ export default function ResouceComponents(props) {
                   "Onboarded",
                   "Rejected",
                   "Hold",
-                ].map((status) => (
-                  <div
-                    key={status}
-                    onClick={() => setSelectedStatus(status)}
-                    className={`flex items-center px-4 py-3 rounded-lg border cursor-pointer transition-all ${
-                      selectedStatus === status
-                        ? "border-[#5B6ACF] bg-[#5B6ACF]/5 text-[#5B6ACF]"
-                        : "border-[#E5E5E5] hover:border-[#5B6ACF]/50"
-                    }`}
-                  >
-                    <span className="text-[14px] font-medium">
-                      {status.replace("_", " ")}
-                    </span>
-                  </div>
-                ))}
+                ]
+                  .filter(
+                    (status) =>
+                      !candidateToUpdate.currentTimeline.includes(status)
+                  )
+                  .map((status) => (
+                    <div
+                      key={status}
+                      onClick={() => setSelectedStatus(status)}
+                      className={`flex items-center px-4 py-3 rounded-lg border cursor-pointer transition-all ${
+                        selectedStatus === status
+                          ? "border-[#5B6ACF] bg-[#5B6ACF]/5 text-[#5B6ACF]"
+                          : "border-[#E5E5E5] hover:border-[#5B6ACF]/50"
+                      }`}
+                    >
+                      <span className="text-[14px] font-medium">
+                        {status.replace("_", " ")}
+                      </span>
+                    </div>
+                  ))}
               </div>
               <div className="flex justify-end gap-3 mt-4">
                 <button
