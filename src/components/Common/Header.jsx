@@ -18,13 +18,29 @@ const Header = () => {
     <header className="h-20 w-full bg-white border-b border-[#D9D9D9] flex items-center px-6 relative">
       <div className="flex w-full items-center justify-between">
         {/* Left - App Branding */}
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-linear-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
             <span className="text-white font-bold text-xl">R</span>
           </div>
           <h1 className="text-xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hidden sm:block">
             Resource Manager
           </h1>
+        </div> */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg overflow-hidden">
+            <img
+              src="https://inspiron-web-media.s3.ap-south-1.amazonaws.com/wp-content/uploads/2024/09/29064639/home-page-banner-svg.svg"
+              alt="Company Logo"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="hidden sm:block h-8">
+            <img
+              src="https://inspironlabs.com/wp-content/uploads/2024/07/Inspiron-main-logo.svg"
+              alt="Company Name"
+              className="h-full object-contain"
+            />
+          </div>
         </div>
 
         {/* Right */}
@@ -63,7 +79,7 @@ const Header = () => {
           {user ? (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-linear-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-medium shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-linear-to-r from-green-500 to-green-600 flex items-center justify-center text-white font-medium shadow-sm">
                   {(user.fullname || user.name || user.username || "U")
                     .charAt(0)
                     .toUpperCase()}

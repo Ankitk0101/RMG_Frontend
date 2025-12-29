@@ -52,7 +52,7 @@ const handleApiError = (error) => {
 
 const getDashboardStats = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}get-dashboard-stats`, {
+    const response = await fetch(`${API_BASE_URL}dashboard-stats`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -68,7 +68,7 @@ const getDashboardStats = async () => {
 
 const getFlowChartData = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}get-flow-chart-data`, {
+    const response = await fetch(`${API_BASE_URL}flow-chart-data`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -81,10 +81,11 @@ const getFlowChartData = async () => {
     return handleApiError(error);
   }
 };
-const getCreatedOnStatusTableData = async () => {
+
+const getByStatusCreatedOnTableData = async () => {
   console.log("getCreatedOnStatusTableData called");
   try {
-    const response = await fetch(`${API_BASE_URL}get-created-on-status-table-data`, {
+    const response = await fetch(`${API_BASE_URL}created-on-status-table-data`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -98,9 +99,9 @@ const getCreatedOnStatusTableData = async () => {
   }
 };  
 
-const getUpdatedOnStatusTableData = async () => {
+const getByStatusUpdatedOnTableData = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}get-updated-on-status-table-data`, {
+    const response = await fetch(`${API_BASE_URL}updated-on-status-table-data`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -114,4 +115,20 @@ const getUpdatedOnStatusTableData = async () => {
   }
 };
 
-export { getDashboardStats, getCreatedOnStatusTableData, getUpdatedOnStatusTableData ,getFlowChartData};
+const getInAndOutHouseTableData = async (house) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}in-and-out-house-table-data/:${house}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    const responseData = await handleResponse(response);
+    return {
+      success: true,
+      data: responseData
+    };
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+export { getDashboardStats, getByStatusCreatedOnTableData, getByStatusUpdatedOnTableData ,getFlowChartData, getInAndOutHouseTableData};

@@ -2,6 +2,7 @@ import React from "react";
 import StatsCards from "./StatsCards";
 import DemandChart from "./DemandChart";
 import DemandTable from "./DemandTable";
+import InAndOutHouseTable from "./InAndOutHouseTable";
 
 const DashboardLayout = () => {
   const statsData = [
@@ -68,17 +69,19 @@ const DashboardLayout = () => {
               </div>
             ))}
           </div> */}
-          <div className="rounded-lg p-6">
+          <div className="rounded-lg p-6 flex justify-center">
             <DemandChart />
           </div>
         </div>
-
         {/* Table Section */}
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">
-            By Status (Based on created on)
-          </h2>
+        <div className="p-6 flex justify-center">
           <DemandTable />
+        </div>
+        <div className="p-6 flex justify-center">
+          <InAndOutHouseTable resourceType="Internal" />
+        </div>
+        <div className="p-6 flex justify-center">
+          <InAndOutHouseTable resourceType="External" />
         </div>
       </div>
     </div>

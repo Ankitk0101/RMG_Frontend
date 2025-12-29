@@ -1,32 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getCreatedOnStatusTableData } from "../../services/dashboardAnalyticsService";
+import { getByStatusCreatedOnTableData } from "../../services/dashboardAnalyticsService";
 
 const DemandTable = () => {
-  // const tableData = [
-  //   {
-  //     month: "Oct-25",
-  //     demandAdded: "682",
-  //     client: "258",
-  //     lead: "359",
-  //     status11: "33",
-  //     status12: "27",
-  //     status13: "5",
-  //     na: "447",
-  //     pending: "0",
-  //     keepOnHold: "154",
-  //     inactiveClosed: "0",
-  //     couldNotFulfill: "81",
-  //     fulfilled: "81",
-  //     noAction: "81",
-  //   },
-  // ];
-
   const [demandTableData, setDemandTableData] = useState([]);
 
   useEffect(() => {
     const fetchTableData = async () => {
       try {
-        const response = await getCreatedOnStatusTableData();
+        const response = await getByStatusCreatedOnTableData();
         console.log("data for demandTable -> ", response);
         setDemandTableData(response.data.data);
       } catch (error) {
@@ -39,11 +20,11 @@ const DemandTable = () => {
   return (
     <div className="w-[1136px] h-auto border border-[#D9D9D9] rounded-[8px] overflow-hidden bg-white">
       {/* Title */}
-      <div className="text-center text-[13px] text-[#1C1C1C] py-3 border-b border-[#E5E5E5]">
+      <div className="text-center text-[20px] text-[#585858] py-3 border-b border-[#E5E5E5]">
         By Status <span className="text-[#6C6E70]">(Based on created on)</span>
       </div>
 
-      <table className="w-full border-collapse text-[12px] text   -[#1C1C1C]">
+      <table className="w-full border-collapse text-[12px] text-[#1C1C1C]">
         <thead>
           <tr className="bg-[#FAFAFA] border-b border-[#E5E5E5]">
             <th rowSpan="2" className="border-r px-2 py-2">

@@ -78,10 +78,6 @@ export const addResources = async (formData) => {
   }
 };
 
-
-
-
-
 export const getAllResource = async () => {
   console.log("Get all resource called")
   try {
@@ -203,4 +199,4 @@ export const getDashboardStats = async () => {
     return handleApiError(error);
   }
 };
-    
+      

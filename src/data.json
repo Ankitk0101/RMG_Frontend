@@ -1,0 +1,112 @@
+{
+    "DashboardInHouseResourceData":[
+        {
+            "serialNo": 1,
+            "totalCVs": 2,
+            "month": "Jul-2025",
+            "cvStatus": {
+                "awaiting": 0,
+                "selected": 0,
+                "rejected": 0,
+                "ignored": 0
+            },
+            "interviewStatus": {
+                "pending": 0,
+                "writtenTestPending": 0,
+                "writtenTestRejected": 0,
+                "awaiting": 0,
+                "scheduled": 1
+            }
+        },
+        {
+            "serialNo": 2,
+            "totalCVs": 2,
+            "month": "Aug-2025",
+            "cvStatus": {
+                "awaiting": 0,
+                "selected": 0,
+                "rejected": 0,
+                "ignored": 1
+            },
+            "interviewStatus": {
+                "pending": 0,
+                "writtenTestPending": 0,
+                "writtenTestRejected": 0,
+                "awaiting": 0,
+                "scheduled": 0
+            }
+        },
+        {
+            "serialNo": 3,
+            "totalCVs": 2,
+            "month": "Sep-2025",
+            "cvStatus": {
+                "awaiting": 0,
+                "selected": 0,
+                "rejected": 0,
+                "ignored": 0
+            },
+            "interviewStatus": {
+                "pending": 0,
+                "writtenTestPending": 0,
+                "writtenTestRejected": 1,
+                "awaiting": 0,
+                "scheduled": 0
+            }
+        },
+        {
+            "serialNo": 4,
+            "totalCVs": 2,
+            "month": "Oct-2025",
+            "cvStatus": {
+                "awaiting": 0,
+                "selected": 0,
+                "rejected": 0,
+                "ignored": 0
+            },
+            "interviewStatus": {
+                "pending": 0,
+                "writtenTestPending": 0,
+                "writtenTestRejected": 0,
+                "awaiting": 0,
+                "scheduled": 1
+            }
+        },
+        {
+            "serialNo": 5,
+            "totalCVs": 1,
+            "month": "Nov-2025",
+            "cvStatus": {
+                "awaiting": 0,
+                "selected": 0,
+                "rejected": 0,
+                "ignored": 0
+            },
+            "interviewStatus": {
+                "pending": 0,
+                "writtenTestPending": 0,
+                "writtenTestRejected": 0,
+                "awaiting": 0,
+                "scheduled": 1
+            }
+        },
+        {
+            "serialNo": 6,
+            "totalCVs": 11,
+            "month": "Dec-2025",
+            "cvStatus": {
+                "awaiting": 2,
+                "selected": 0,
+                "rejected": 0,
+                "ignored": 0
+            },
+            "interviewStatus": {
+                "pending": 0,
+                "writtenTestPending": 0,
+                "writtenTestRejected": 0,
+                "awaiting": 0,
+                "scheduled": 0
+            }
+        }
+    ]
+}
