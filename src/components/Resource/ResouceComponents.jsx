@@ -78,7 +78,6 @@ export default function ResouceComponents(props) {
         resumeFile: undefined, // prevent File in JSON
       };
 
-      // payload.append("file", candidateForm.resumeFile); // actual File object
       payload.append("type", "resume"); // extra field
       payload.append("data", JSON.stringify(jsonData)); // optional JSON data
 

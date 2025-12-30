@@ -54,37 +54,71 @@ const handleApiError = (error) => {
   };
 };
 
-export const uploadResume = async (formData,) => {
-    console.log("formData in uploadResume", formData);
-  try {
-    const token = localStorage.getItem('token');
-    const headers = {};
-    
-    if (token) {
-      headers['authorization'] = token;
-    }
-    
-    // Note: Don't set Content-Type for FormData - browser will set it automatically with boundary
-    const response = await fetch(`${API_BASE_URL}add-resume`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            authorization: token
-        },
-        body: JSON.stringify(formData)
-    });
+// export const uploadResume = async (formData) => {
+//   console.log("formData in uploadResume ", formData);
+//   try {
+//     const token = localStorage.getItem('token');
+//     const headers = {};
 
-    console.log('response in uploadResume', response);
-    const responseData = await handleResponse(response);
-    console.log('responseData in uploadResume', responseData);
+//     if (token) {
+//       headers['authorization'] = token;
+//     }
+
+//     // // Check if formData is an instance of FormData
+//     // const isFormData = formData instanceof FormData;
+//     // console.log("isFormData in uploadResume ", isFormData);
+
+
+//     // Note: Don't set Content-Type for FormData - browser will set it automatically with boundary
+//     const response = await fetch(`http://localhost:5000/upload-conformation`, {
+//       method: "POST",
+//       body: {formData}
+//     });
     
+
+//     console.log('response in uploadResume', response); 
+//     const responseData = await handleResponse(response); 
+//     console.log('responseData in uploadResume', responseData); 
+    
+//     return {
+//       success: true,
+//       data: responseData,
+//       message: 'File uploaded successfully'
+//     };
+//   } catch (error) {
+//     console.log("error in uploadResume", error);
+//     return handleApiError(error);
+//   }
+// };
+
+export const uploadResume = async (formData) => {
+  console.log("formData in uploadResume", formData);
+  try {
+    const token = localStorage.getItem("token");
+
+    const headers = {};
+    if (token) {
+      headers["authorization"] = token;
+    }
+
+    const response = await fetch(
+      "http://localhost:5000/upload-conformation",
+      {
+        method: "POST",
+        headers,        
+        body: formData  
+      }
+    );
+
+    const responseData = await handleResponse(response);
+
     return {
       success: true,
       data: responseData,
-      message: 'File uploaded successfully'
+      message: "File uploaded successfully",
     };
   } catch (error) {
-    console.log("error in uploadResume", error);
+    console.error("error in uploadResume", error);
     return handleApiError(error);
   }
 };
