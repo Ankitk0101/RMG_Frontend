@@ -30,6 +30,7 @@ export default function ResouceComponents(props) {
     candidateCurrentCTC: "",
     candidateSkills: "",
     resumeRefPath: null,
+    resumeFile: null,
   });
 
   const handleInputChange = (e) => {
@@ -46,13 +47,14 @@ export default function ResouceComponents(props) {
       setCandidateForm((prev) => ({
         ...prev,
         resumeRefPath: file.name,
+        resumeFile: file,
       }));
     }
   };
 
   const handleUploadSubmit = async () => {
     console.log("handleUploadSubmit called");
-    setIsProfilesUpdating(true);
+
     if (
       !candidateForm.candidateName ||
       !candidateForm.candidateEmail ||
@@ -62,28 +64,39 @@ export default function ResouceComponents(props) {
       return;
     }
 
-    console.log("Submitting Candidate Form:", candidateForm);
+    setIsProfilesUpdating(true);
 
     const recruterId = JSON.parse(localStorage.getItem("user")).id;
 
     try {
-      await uploadResume({
+      const payload = new FormData();
+
+      const jsonData = {
         ...candidateForm,
         resourceModelId: updatedResource._id,
         recruterId,
-      });
+        resumeFile: undefined, // prevent File in JSON
+      };
+
+      // payload.append("file", candidateForm.resumeFile); // actual File object
+      payload.append("type", "resume"); // extra field
+      payload.append("data", JSON.stringify(jsonData)); // optional JSON data
+
+      if (candidateForm.resumeFile) {
+        payload.append("file", candidateForm.resumeFile);
+      }
+      //console.log("payload in handleUploadSubmit", payload);
+      await uploadResume(payload);
+
       const updatedResourcefromDb = await getSingalResource(
         updatedResource._id
       );
-      console.log("updatedResourcefromDb", updatedResourcefromDb);
-      setTimeout(() => {
-        if (updatedResourcefromDb.success) {
-          setIsProfilesUpdating(false);
-          setUpdatedResource(updatedResourcefromDb.data.data);
-        }
-      }, 3000);
 
-      // Reset form and close modal
+      if (updatedResourcefromDb?.success) {
+        setUpdatedResource(updatedResourcefromDb.data.data);
+      }
+
+      // reset
       setCandidateForm({
         candidateName: "",
         candidateEmail: "",
@@ -92,12 +105,16 @@ export default function ResouceComponents(props) {
         candidateCurrentCTC: "",
         candidateSkills: "",
         resumeRefPath: null,
+        resumeFile: null,
       });
+
       setShowModal(false);
       setShowDuration(false);
     } catch (error) {
       console.error("Error uploading profile:", error);
       alert("Failed to upload profile. Please try again.");
+    } finally {
+      setIsProfilesUpdating(false);
     }
   };
 
@@ -787,6 +804,7 @@ export default function ResouceComponents(props) {
                       candidateCurrentCTC: "",
                       candidateSkills: "",
                       resumeRefPath: null,
+                      resumeFile: null,
                     });
                   }}
                   className="px-4 py-2 text-[14px] rounded bg-[#BFBFBF] text-white hover:bg-[#A6A6A6]"
