@@ -1,9 +1,10 @@
 import React from "react";
 import ResumePopUp from "../ResumePopUp/ResumePopUp";
-import { useState, useRef } from "react";
-import { uploadResume, updateResumeStatus } from "../../services/resumeService";
-import { getSingalResource } from "../../services/resourceApi";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import UploadProfilePopUp from "./UploadProfilePopUp";
+import UpdateStatusPopUp from "./UpdateStatusPopUp";
+import Lead from "./Lead";
 
 export default function ResouceComponents(props) {
   console.log("ResouceComponents Called");
@@ -15,164 +16,14 @@ export default function ResouceComponents(props) {
   const [showDuration, setShowDuration] = useState(true);
   const [showResumePopUp, setShowResumePopUp] = useState(false);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
-  const fileInputRef = useRef(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [candidateToUpdate, setCandidateToUpdate] = useState(null);
 
   console.log("updatedResource ----- ", updatedResource);
 
-  const [candidateForm, setCandidateForm] = useState({
-    candidateName: "",
-    candidateEmail: "",
-    candidateExperience: 0,
-    candidateExpectedCTC: "",
-    candidateCurrentCTC: "",
-    candidateSkills: "",
-    resumeRefPath: null,
-    resumeFile: null,
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCandidateForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setCandidateForm((prev) => ({
-        ...prev,
-        resumeRefPath: file.name,
-        resumeFile: file,
-      }));
-    }
-  };
-
-  const handleUploadSubmit = async () => {
-    console.log("handleUploadSubmit called");
-
-    if (
-      !candidateForm.candidateName ||
-      !candidateForm.candidateEmail ||
-      !candidateForm.resumeRefPath
-    ) {
-      alert("Please fill in all required fields and upload a resume.");
-      return;
-    }
-
-    setIsProfilesUpdating(true);
-
-    const recruterId = JSON.parse(localStorage.getItem("user")).id;
-
-    try {
-      const payload = new FormData();
-
-      const jsonData = {
-        ...candidateForm,
-        resourceModelId: updatedResource._id,
-        recruterId,
-        resumeFile: undefined, // prevent File in JSON
-      };
-
-      payload.append("type", "resume"); // extra field
-      payload.append("data", JSON.stringify(jsonData)); // optional JSON data
-
-      if (candidateForm.resumeFile) {
-        payload.append("file", candidateForm.resumeFile);
-      }
-      //console.log("payload in handleUploadSubmit", payload);
-      await uploadResume(payload);
-
-      const updatedResourcefromDb = await getSingalResource(
-        updatedResource._id
-      );
-
-      if (updatedResourcefromDb?.success) {
-        setUpdatedResource(updatedResourcefromDb.data.data);
-      }
-
-      // reset
-      setCandidateForm({
-        candidateName: "",
-        candidateEmail: "",
-        candidateExperience: 0,
-        candidateExpectedCTC: "",
-        candidateCurrentCTC: "",
-        candidateSkills: "",
-        resumeRefPath: null,
-        resumeFile: null,
-      });
-
-      setShowModal(false);
-      setShowDuration(false);
-    } catch (error) {
-      console.error("Error uploading profile:", error);
-      alert("Failed to upload profile. Please try again.");
-    } finally {
-      setIsProfilesUpdating(false);
-    }
-  };
-
   const handleUpdateStatus = (candidateId, currentTimeline) => {
     setCandidateToUpdate({ candidateId, currentTimeline });
     setShowStatusModal(true);
-  };
-
-  const handleStatusSubmit = async () => {
-    if (!selectedStatus) {
-      alert("Please select a status.");
-      return;
-    }
-
-    let resumeStatus = "Pending";
-    if (selectedStatus === "Onboarded") {
-      resumeStatus = "Fullfilled";
-    } else if (
-      selectedStatus === "Rejected" ||
-      selectedStatus === "CV_Rejected" ||
-      selectedStatus === "Written_Test_Rejected"
-    ) {
-      resumeStatus = "Rejected";
-    } else if (selectedStatus === "Hold") {
-      resumeStatus = "Hold";
-    }
-    const { candidateId, currentTimeline } = candidateToUpdate;
-    const updatedCandidateStatusTimeline = [...currentTimeline, selectedStatus];
-
-    try {
-      setIsProfilesUpdating(true);
-      setShowStatusModal(false);
-      const response = await updateResumeStatus(
-        candidateId,
-        updatedCandidateStatusTimeline,
-        resumeStatus
-      );
-
-      if (response.success) {
-        const updatedResourcefromDb = await getSingalResource(
-          updatedResource._id
-        );
-        setTimeout(() => {
-          if (updatedResourcefromDb.success) {
-            setIsProfilesUpdating(false);
-            setUpdatedResource(updatedResourcefromDb.data.data);
-            setSelectedStatus("");
-            setCandidateToUpdate(null);
-          }
-        }, 3000);
-      } else {
-        alert(response.message || "Failed to update status.");
-        setIsProfilesUpdating(false);
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert("An unexpected error occurred.");
-      setIsProfilesUpdating(false);
-    }
   };
 
   function formatDate(dateString) {
@@ -228,33 +79,13 @@ export default function ResouceComponents(props) {
       return `Need to start today (${formattedDate})`;
     }
 
-    return `Started ${Math.abs(diffDays)} day${
-      Math.abs(diffDays) > 1 ? "s" : ""
-    } ago (${formattedDate})`;
+    return `It's already  ${Math.abs(
+      diffDays
+    )} days Still Not Started (${formattedDate})`;
   }
   // Helper to check if started
-  const isResourceStarted = (status) => {
-    return status === "In Progress" || status === "Completed";
-  };
-
-  const getFilteredCandidateTimelineStatus = (candidate) => {
-    console.log("candidate in getFilteredCandidateTimelineStatus", candidate);
-    const filteredStatus = candidate?.candidateStatusTimeline?.filter(
-      (status) => {
-        console.log("status in getFilteredCandidateTimelineStatus", status);
-        const booleanValue = ![
-          "CV_Selected",
-          "Written_Test_Sheduled",
-          "Written_Test_Cleared",
-        ].includes(status);
-        return booleanValue;
-      }
-    );
-    console.log(
-      "filteredStatus in getFilteredCandidateTimelineStatus",
-      filteredStatus
-    );
-    return filteredStatus;
+  const isResourceStarted = () => {
+    return updatedResource?.resumesOfThisResource?.length > 0;
   };
 
   const isStarted = isResourceStarted(updatedResource.resourceStatus);
@@ -367,168 +198,13 @@ export default function ResouceComponents(props) {
               </div>
 
               {/* Profile */}
-              {isProfilesUpdating ? (
-                <p className="text-[14px] text-[#5B6ACF] animate-pulse">
-                  Profiles updating...
-                </p>
-              ) : isStarted ||
-                (updatedResource?.resumesOfThisResource?.length ?? 0) > 0 ? (
-                <div>
-                  {(updatedResource?.resumesOfThisResource ?? []).map(
-                    (candidate, index) => {
-                      const filterdCanidateStatus =
-                        getFilteredCandidateTimelineStatus(candidate);
-                      return (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between mb-2"
-                        >
-                          <div className="flex items-center">
-                            <p className="text-[14px] font-medium mr-2">
-                              Lead {index + 1}
-                            </p>
-                            {/* Status Circles */}
-                            <div className="flex -space-x-1 ">
-                              {(filterdCanidateStatus ?? []).map(
-                                (status, i) => {
-                                  let statusColor;
-                                  if (status === "CV_Selected")
-                                    statusColor = "bg-[#4C6EF5]";
-                                  else if (status === "Interview_Scheduled")
-                                    statusColor = "bg-[#FAB005]";
-                                  else if (status === "Interview_Cleared")
-                                    statusColor = "bg-[#20C997]";
-                                  else if (status === "HR_Cleared")
-                                    statusColor = "bg-[#12B886]";
-                                  else if (status === "Offered")
-                                    statusColor = "bg-[#40C057]";
-                                  else if (status === "Accepted")
-                                    statusColor = "bg-[#2F9E44]";
-                                  else if (status === "Onboarded")
-                                    statusColor = "bg-[#2F9E44]";
-                                  else if (
-                                    status === "Rejected" ||
-                                    status === "CV_Ignored" ||
-                                    status === "Written_Test_Rejected"
-                                  )
-                                    statusColor = "bg-[#FA5252]";
-                                  else if (status === "Hold")
-                                    statusColor = "bg-[#FD7E14]";
-                                  else statusColor = "bg-[#CED4DA]";
-
-                                  return (
-                                    <div key={i} className="relative group">
-                                      <div
-                                        className={`h-[20px] w-[20px] rounded-full text-white ${statusColor} border border-white ml-[5px] cursor-pointer`}
-                                        title={status}
-                                      />
-                                      {/* Tooltip Popup */}
-                                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-[#E5E5E5] rounded-lg shadow-xl p-4 hidden group-hover:block z-[100]">
-                                        <div className="flex justify-between items-start mb-2">
-                                          <div>
-                                            <p className="text-[14px] font-semibold text-[#1C1C1C]">
-                                              {candidate.candidateName}
-                                            </p>
-                                            <p className="text-[12px] text-[#6C6E70]">
-                                              {candidate.candidateEmail}
-                                            </p>
-                                          </div>
-                                        </div>
-
-                                        <div className="space-y-1 mb-3">
-                                          <div className="flex justify-between text-[12px]">
-                                            <span className="text-[#6C6E70]">
-                                              Experience:
-                                            </span>
-                                            <span className="font-medium">
-                                              {candidate?.candidateExperience}
-                                            </span>
-                                          </div>
-                                          <div className="flex justify-between text-[12px]">
-                                            <span className="text-[#6C6E70]">
-                                              Exp. CTC:
-                                            </span>
-                                            <span className="font-medium">
-                                              {candidate?.candidateExpectedCTC}
-                                            </span>
-                                          </div>
-                                          <div className="flex justify-between text-[12px]">
-                                            <span className="text-[#6C6E70]">
-                                              Status:
-                                            </span>
-                                            <span className="font-medium">
-                                              {
-                                                candidate
-                                                  ?.candidateStatusTimeline?.[
-                                                  candidate
-                                                    ?.candidateStatusTimeline
-                                                    ?.length - 1
-                                                ]
-                                              }
-                                            </span>
-                                          </div>
-                                        </div>
-
-                                        <button
-                                          className="w-full py-1.5 bg-[#5B6ACF] text-white text-[12px] rounded hover:bg-[#4854c7] transition-colors"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowResumePopUp(true);
-                                          }}
-                                        >
-                                          View Resume
-                                        </button>
-
-                                        {/* Arrow tail */}
-                                        <div className="absolute left-1/2 -top-[5px] -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-[#E5E5E5] transform rotate-45"></div>
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                              )}
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUpdateStatus(
-                                candidate._id,
-                                candidate.candidateStatusTimeline
-                              );
-                            }}
-                            disabled={[
-                              "Rejected",
-                              "CV_Ignored",
-                              "Written_Test_Rejected",
-                            ].includes(
-                              candidate.candidateStatusTimeline?.[
-                                candidate.candidateStatusTimeline.length - 1
-                              ]
-                            )}
-                            className={`text-[12px] px-2 py-[4px] rounded border transition-all ${
-                              [
-                                "Rejected",
-                                "CV_Ignored",
-                                "Written_Test_Rejected",
-                              ].includes(
-                                candidate.candidateStatusTimeline?.[
-                                  candidate.candidateStatusTimeline.length - 1
-                                ]
-                              )
-                                ? "text-[#A6A6A6] border-[#D9D9D9] bg-[#F5F5F5] cursor-not-allowed opacity-60"
-                                : "text-[#6C6E70] border-[#6C6E70] hover:bg-[#F5F5F5] cursor-pointer"
-                            }`}
-                          >
-                            Update Status
-                          </button>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              ) : (
-                <p className="text-[14px]">Profiles 0</p>
-              )}
+              <Lead
+                updatedResource={updatedResource}
+                isStarted={isStarted}
+                isProfilesUpdating={isProfilesUpdating}
+                setShowResumePopUp={setShowResumePopUp}
+                handleUpdateStatus={handleUpdateStatus}
+              />
 
               {/* Duration */}
               {!isStarted && showDuration && (
@@ -663,306 +339,30 @@ export default function ResouceComponents(props) {
             )}
           </div>
         </div>
-        {showModal && (
-          <div className="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center">
-            <div className="bg-white w-[600px] rounded-[8px] p-6 shadow-lg max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <p className="text-[18px] font-medium text-[#1C1C1C]">
-                  Upload Candidate Profile
-                </p>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-[#6C6E70] text-xl"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                {/* Name */}
-                <div>
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Candidate Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="candidateName"
-                    value={candidateForm.candidateName}
-                    onChange={handleInputChange}
-                    className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
-                    placeholder="John Doe"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="candidateEmail"
-                    value={candidateForm.candidateEmail}
-                    onChange={handleInputChange}
-                    className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                {/* Experience */}
-                <div>
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Experience (Years)
-                  </label>
-                  <input
-                    type="number"
-                    name="candidateExperience"
-                    value={candidateForm.candidateExperience}
-                    onChange={handleInputChange}
-                    className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
-                    placeholder="e.g. 5"
-                  />
-                </div>
-
-                {/* Current CTC */}
-                <div>
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Current CTC
-                  </label>
-                  <input
-                    type="text"
-                    name="candidateCurrentCTC"
-                    value={candidateForm.candidateCurrentCTC}
-                    onChange={handleInputChange}
-                    className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
-                    placeholder="e.g. 10 LPA"
-                  />
-                </div>
-
-                {/* Expected CTC */}
-                <div>
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Expected CTC
-                  </label>
-                  <input
-                    type="text"
-                    name="candidateExpectedCTC"
-                    value={candidateForm.candidateExpectedCTC}
-                    onChange={handleInputChange}
-                    className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
-                    placeholder="e.g. 15 LPA"
-                  />
-                </div>
-
-                {/* Skills */}
-                <div className="col-span-2">
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Skills
-                  </label>
-                  <input
-                    type="text"
-                    name="candidateSkills"
-                    value={candidateForm.candidateSkills}
-                    onChange={handleInputChange}
-                    className="w-full border border-[#D9D9D9] rounded p-2 text-[13px] outline-none focus:border-[#5B6ACF]"
-                    placeholder="Java, React, Node.js..."
-                  />
-                </div>
-
-                {/* Resume Upload */}
-                <div className="col-span-2 mt-2">
-                  <label className="block text-[12px] text-[#6C6E70] mb-1">
-                    Resume <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                      className="block w-full text-[12px] text-slate-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-[12px] file:font-semibold
-                      file:bg-[#F0F2FF] file:text-[#5B6ACF]
-                      hover:file:bg-[#E1E5FF] cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#F0F0F0]">
-                <button
-                  onClick={() => {
-                    setShowModal(false);
-                    setCandidateForm({
-                      candidateName: "",
-                      candidateEmail: "",
-                      candidateExperience: 0,
-                      candidateExpectedCTC: "",
-                      candidateCurrentCTC: "",
-                      candidateSkills: "",
-                      resumeRefPath: null,
-                      resumeFile: null,
-                    });
-                  }}
-                  className="px-4 py-2 text-[14px] rounded bg-[#BFBFBF] text-white hover:bg-[#A6A6A6]"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUploadSubmit}
-                  className="px-6 py-2 text-[14px] rounded bg-[#2F9E44] text-white hover:bg-[#288b3c]"
-                >
-                  Upload
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {showStatusModal && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-[12px] shadow-2xl w-[400px] p-6">
-              <h3 className="text-[18px] font-semibold text-[#1C1C1C] mb-4">
-                Update Candidate Status
-              </h3>
-              <p className="text-[14px] text-[#6C6E70] mb-4">
-                Select the round for the candidate:
-              </p>
-              <div className="grid grid-cols-1 gap-2 mb-6 max-h-[300px] overflow-y-auto pr-2">
-                {[
-                  "CV_Selected",
-                  "CV_Rejected",
-                  "CV_Ignored",
-                  "Written_Test_Sheduled",
-                  "Written_Test_Cleared",
-                  "Written_Test_Rejected",
-                  "Interview_Scheduled",
-                  "Interview_Cleared",
-                  "HR_Cleared",
-                  "Offered",
-                  "Accepted",
-                  "Onboarded",
-                  "Rejected",
-                  "Hold",
-                ]
-                  .filter(
-                    (status) =>
-                      !candidateToUpdate.currentTimeline.includes(status)
-                  )
-                  .map((status) => (
-                    <div
-                      key={status}
-                      onClick={() => setSelectedStatus(status)}
-                      className={`flex items-center px-4 py-3 rounded-lg border cursor-pointer transition-all ${
-                        selectedStatus === status
-                          ? "border-[#5B6ACF] bg-[#5B6ACF]/5 text-[#5B6ACF]"
-                          : "border-[#E5E5E5] hover:border-[#5B6ACF]/50"
-                      }`}
-                    >
-                      <span className="text-[14px] font-medium">
-                        {status.replace("_", " ")}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-              <div className="flex justify-end gap-3 mt-4">
-                <button
-                  onClick={() => {
-                    setShowStatusModal(false);
-                    setSelectedStatus("");
-                  }}
-                  className="px-4 py-2 text-[14px] rounded bg-[#BFBFBF] text-white hover:bg-[#A6A6A6] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleStatusSubmit}
-                  className="px-6 py-2 text-[14px] rounded bg-[#5B6ACF] text-white hover:bg-[#4A59B8] transition-colors"
-                >
-                  Update
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <UploadProfilePopUp
+          showModal={showModal}
+          setShowModal={setShowModal}
+          updatedResource={updatedResource}
+          setUpdatedResource={setUpdatedResource}
+          setIsProfilesUpdating={setIsProfilesUpdating}
+          setShowDuration={setShowDuration}
+        />
+        <UpdateStatusPopUp
+          showStatusModal={showStatusModal}
+          setShowStatusModal={setShowStatusModal}
+          candidateToUpdate={candidateToUpdate}
+          setCandidateToUpdate={setCandidateToUpdate}
+          updatedResource={updatedResource}
+          setUpdatedResource={setUpdatedResource}
+          setIsProfilesUpdating={setIsProfilesUpdating}
+        />
         {showResumePopUp && (
           <ResumePopUp
             onClose={() => setShowResumePopUp(false)}
-            resumeUrl="/Ux-designer-resume-example-5.pdf"
+            resumeUrl="/Stockholm-Resume-Template-Simple.pdf"
           />
         )}
       </div>
     </>
   );
 }
-
-// const sampleJsonCandidates = [
-//   {
-//     name: "John Wick",
-//     email: "rashi.sharma@example.com",
-//     phone: "1234567890",
-//     resume: "resume.pdf",
-//     coverLetter: "cover-letter.pdf",
-//     status: "Interviewed",
-//     interviewDate: "2023-01-01",
-//     interviewer: "John Doe",
-//     notes: "Candidate is a good fit for the role.",
-//     experience: "5 years",
-//     "Exp CTC": "500000 INR",
-//     currentProfileStatusList: [
-//       "Screening",
-//       "Shortlisted",
-//       "Interviewed",
-//       "Offered",
-//       "Hired",
-//     ],
-//   },
-//   {
-//     name: "Krunal Sharma",
-//     email: "rashi.sharma@example.com",
-//     phone: "1234567890",
-//     resume: "resume.pdf",
-//     coverLetter: "cover-letter.pdf",
-//     status: "Interviewed",
-//     interviewDate: "2023-01-01",
-//     interviewer: "John Doe",
-//     notes: "Candidate is a good fit for the role.",
-//     experience: "5 years",
-//     "Exp CTC": "500000 INR",
-//     currentProfileStatusList: ["Screening", "Shortlisted"],
-//   },
-//   {
-//     name: "Steave Smith",
-//     email: "rashi.sharma@example.com",
-//     phone: "1234567890",
-//     resume: "resume.pdf",
-//     coverLetter: "cover-letter.pdf",
-//     status: "Interviewed",
-//     interviewDate: "2023-01-01",
-//     interviewer: "John Doe",
-//     notes: "Candidate is a good fit for the role.",
-//     experience: "5 years",
-//     "Exp CTC": "500000 INR",
-//     currentProfileStatusList: [
-//       "Screening",
-//       "Shortlisted",
-//       "Interviewed",
-//       "Rejected",
-//     ],
-//   },
-//   {
-//     name: "Cameron Green",
-//     email: "rashi.sharma@example.com",
-//     phone: "1234567890",
-//     resume: "resume.pdf",
-//     coverLetter: "cover-letter.pdf",
-//     status: "Interviewed",
-//     interviewDate: "2023-01-01",
-//     interviewer: "John Doe",
-//     notes: "Candidate is a good fit for the role.",
-//     experience: "5 years",
-//     "Exp CTC": "500000 INR",
-//     currentProfileStatusList: ["Screening", "Shortlisted"],
-//   },
-// ];

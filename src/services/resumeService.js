@@ -91,7 +91,7 @@ const handleApiError = (error) => {
 //   }
 // };
 
-export const uploadResume = async (formData) => {
+export const uploadResumeToS3 = async (formData) => {
   console.log("formData in uploadResume", formData);
   try {
     const token = localStorage.getItem("token");
@@ -102,7 +102,7 @@ export const uploadResume = async (formData) => {
     }
 
     const response = await fetch(
-      "http://localhost:5000/upload-conformation",
+      "http://localhost:5000/api/upload/upload-conformation",
       {
         method: "POST",
         headers,        
@@ -119,6 +119,63 @@ export const uploadResume = async (formData) => {
     };
   } catch (error) {
     console.error("error in uploadResume", error);
+    return handleApiError(error);
+  }
+};
+
+// export const uploadResumeToDb = async (formData) => {
+//   console.log("formData in uploadResumeToDb",formData);
+//   try {
+//     const token = localStorage.getItem("token");
+//     const headers = {};
+//     if (token) {
+//       headers["authorization"] = token;
+//     }
+//     const response = await fetch(
+//       "http://localhost:5000/api/resume/add-candidate-resume",
+//       {
+//         method: "POST",
+//         headers,
+//         body: formData
+//       }
+//     );
+//     const responseData = await handleResponse(response);
+//     return {
+//       success: true,
+//       data: responseData,
+//       message: "File uploaded successfully",
+//     };
+//   } catch (error) {
+//     console.error("error in uploadResume", error);
+//     return handleApiError(error);
+//   }
+// };
+export const uploadResumeToDb = async (data) => {
+  console.log("data in uploadResumeToDb", data);
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://localhost:5000/api/resume/add-candidate-resume",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // ✅ REQUIRED
+          authorization: token,
+        },
+        body: JSON.stringify(data), // ✅ REQUIRED
+      }
+    );
+
+    const responseData = await handleResponse(response);
+    return {
+      success: true,
+      data: responseData,
+      message: "Resume data saved successfully",
+    };
+  } catch (error) {
+    console.error("error in uploadResumeToDb", error);
     return handleApiError(error);
   }
 };
