@@ -162,12 +162,9 @@ export const authService = {
     const response = await fetch(`${API_BASE_URL}/authozied_user`, {
       method: 'POST', // Changed to uppercase
       headers: {
-        'Content-Type': 'application/json', // Add content-type
+        'Content-Type': 'application/json',  
+        authorization: `${token}` ,
       },
-      body: JSON.stringify({
-        authorization: `${token}` // Send in body with Bearer prefix
-      }),
-      
     });
     
     const data = await response.json();

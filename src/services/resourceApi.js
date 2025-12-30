@@ -14,23 +14,46 @@ const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   console.log(token)
   return {
-    authorization: token,  
+    'Content-Type': 'application/json',
+    authorization: token,
   };
 };
 
 
-// Helper function to handle API responses
+ 
 const handleResponse = async (response) => {
+  const contentType = response.headers.get("content-type");
+
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const error = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    let errorData = {};
+
+    if (contentType && contentType.includes("application/json")) {
+      errorData = await response.json();
+    }
+
+    const error = new Error(
+      errorData.message || `HTTP error! status: ${response.status}`
+    );
+
     error.status = response.status;
     error.data = errorData;
     throw error;
   }
-  
-  return response.json();
+
+  // If NO CONTENT (204)
+  if (response.status === 204) {
+    return null;
+  }
+
+  // If response has JSON
+  if (contentType && contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  // Fallback (text response)
+  return null;
 };
+
 
 // Helper function to handle API errors
 const handleApiError = (error) => {
@@ -56,27 +79,66 @@ const handleApiError = (error) => {
   };
 };
 
-export const addResources = async (formData) => {
-  console.log("Form Data in addResources resoureApoi -> " , formData)
-  try {
-     
-    const response = await fetch(`${API_BASE_URL}add-resource`, {
-      method: 'POST',
-      headers: getAuthHeaders(), 
-      body: formData,  
-    });
 
-    const responseData = await handleResponse(response);
-    console.log("add success")
-    return {
-      success: true,
-      data: responseData,
-      message: 'Resource added successfully',
-    };
-  } catch (error) {
-    return handleApiError(error);
+
+export const addResources = async (formData, l2File) => {
+  const isL2 = formData.demandBudgetInfo.paymentConformation === "L2";
+
+  let paymentDocumentUrl = "";
+
+  // 🔹 Upload ONLY if L2
+  if (isL2) {
+    if (!l2File) {
+      throw new Error("L2 requires payment confirmation document");
+    }
+
+    const fd = new FormData();
+    fd.append("file", l2File);
+
+    const uploadRes = await fetch(
+      "http://localhost:5000/upload-conformation",
+      {
+        method: "POST",
+        body: fd,
+      }
+    );
+
+    if (!uploadRes.ok) {
+      throw new Error("File upload failed");
+    }
+
+    const uploadData = await uploadRes.json();
+    paymentDocumentUrl = uploadData.path;
   }
+
+  // 🔹 Final payload (clean)
+  const payload = {
+  ...formData,
+  demandBudgetInfo: {
+    ...formData.demandBudgetInfo,
+    paymentConformationDocumentPath:
+      formData.demandBudgetInfo.paymentConformation === "L2"
+        ? paymentDocumentUrl
+        : "",
+  },
 };
+
+  const res = await fetch(API_BASE_URL + "add-resource", {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error("Add resource failed");
+  }
+
+  return res.json();
+};
+
+
+
+
 
 export const getAllResource = async () => {
   console.log("Get all resource called")
@@ -95,7 +157,7 @@ export const getAllResource = async () => {
   } catch (error) {
     return handleApiError(error);
   }
-};
+}
 
 export const getSingalResource = async (id) => {
   try {

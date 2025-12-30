@@ -2,75 +2,78 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddResourceForm from "../components/Forms/AddResourceForm";
 import { addResources } from "../services/resourceApi";
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 // Empty form data structure - UPDATED to match the provided fields
 const emptyFormData = {
-  resourceDemandInfo: {
-    demandCategory: "",
-    noOfResource: "",
-    demandLevel: "",
-    engagement: "",
-    demandTechnologyName: "",
-    demandSubTechnologyName: "",
-    demandType: "",
+  "resourceDemandInfo": {
+    "demandCategory": "",
+    "noOfResource": 0,
+    "demandLevel": "",
+    "engagement": "",
+    "demandTechnologyName": "",
+    "demandSubTechnologyName": "",
+    "demandType": ""
   },
-  contractDetails: {
-    clientNeed: "",
-    contractType: "",
-    workingDays: "",
-    workingTiming: "",
-    workingLocation: "",
-    workingMode: "",
-    laptopProvideBy: "",
-    isBGVRequired: "",
-    clientBGV_Verify: "",
-    BGVNote: "",
+  "contractDetails": {
+    "clientNeed": "",
+    "contractType": "",
+    "workingDays": "",
+    "workingTiming": "",
+    "workingLocation": "",
+    "workingMode": "",
+    "laptopProvideBy": "",
+    "isBGVRequired": "",
+    "clientBGV_Verify": "",
+    "BGVNote": ""
   },
-  demandJobDetails: {
-    jobDescription: "",
+  "demandJobDetails": {
+    "jobDescription": ""
   },
-  companyDetails: {
-    clientName: "",
-    clientLinkedId: "",
+  "demandDurationInfo": {
+    "billingStartDate": "",
+    "billingEndDate": "",
+    "tentativeDuration": "",
+    "demandDurationNote": ""
   },
-  clientDetails: {
-    leadName: "",
-    leadContact: "",
-    experienceLevel: "",
+  "demandBudgetInfo": {
+    "budgetType": "",
+    "demandBudgetBillingStartDate": "",
+    "currency": "",
+    "demandBudgetNote": "",
+    "budget": 0,
+    "profitMargin": 0,
+    "payoutType": "",
+    "budgetLevel": "",
+    "paymentConformation": "",
+    "paymentConformationDocumentPath": ""
   },
-  demandDurationInfo: {
-    billingStartDate: "",
-    billingEndDate: "",
-    tentativeDuration: "",
-    demandDurationNote: "",
+  "demandInterviewDetails": {
+    "modeOfInterview": "",
+    "interviewNote": "",
+    "noOfInterviewRounds": "",
+    "writtenTextisThere": "",
+    "outsideCandidateAllowed": "",
+    "trail": "",
+    "assignedChannel": "",
+    "budgetStatus": "",
+    "techProfile": "",
+    "contractToHire": "",
+    "requirementResource": "",
+    "nameOfTheSalesPerson": "",
+    "resourceStatus": ""
   },
-  demandBudgetInfo: {
-    budgetType: "",
-    demandBudgetBillingStartDate: "",
-    currency: "",
-    demandBudgetNote: "",
-    budget: "",
-    profitMargin: "",
-    payoutType: "",
-    paymentConformation: "",
-    paymentConformationDocumentPath: "",
+  "companyDetails": {
+    "clientName": "",
+    "clientLinkedId": ""
   },
-  demandInterviewDetails: {
-    modeOfInterview: "",
-    interviewNote: "",
-    budgetStatus: "",
-    techProfile: "",
-    contractToHire: "",
-    requirementResource: "",
-    nameOfTheSalesPerson: "",
-    resourceStatus: "",
-  },
-  // File uploads section
-  fileUploads: {
-    paymentConfirmationDocumentPath: null,
-    supportingDocuments: [],
-  },
-};
+  "clientDetails": {
+    "leadName": "",
+    "leadContact": "",
+    "experienceLevel": ""
+  }
+}
+
 
 const AddResourcePage = () => {
   const navigate = useNavigate();
@@ -78,6 +81,11 @@ const AddResourcePage = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [l2File, setL2File] = useState(null);
+
+  const phone = formData.clientDetails.leadContact;
+  const phoneNumber = parsePhoneNumberFromString(phone || "");
+  const rounds = formData.demandInterviewDetails.noOfInterviewRounds;
 
   const validateForm = () => {
     const newErrors = {};
@@ -136,9 +144,33 @@ const AddResourcePage = () => {
       newErrors.jobDescription = "Job Description is required";
     }
 
+    if (!formData.clientDetails.leadName) {
+      newErrors.leadName = "Lead name is required";
+    }
+
+    if (!formData.clientDetails.experienceLevel) {
+      newErrors.experienceLevel = "Experience level is required";
+    }
+
+
     // Demand Duration validations
     if (!formData.demandDurationInfo.billingStartDate) {
       newErrors.billingStartDate = "Billing Start Date is required";
+    }
+    if (!formData.demandDurationInfo.billingEndDate) {
+      newErrors.billingEndDate = "Billing end date is required";
+    }
+
+    if (!formData.demandDurationInfo.tentativeDuration) {
+      newErrors.tentativeDuration = "Tentative duration is required";
+    }
+
+    if (!formData.demandBudgetInfo.profitMargin) {
+      newErrors.profitMargin = "Profit margin is required";
+    }
+
+    if (!formData.demandBudgetInfo.payoutType) {
+      newErrors.payoutType = "Payout type is required";
     }
 
     // Demand Budget validations
@@ -157,12 +189,18 @@ const AddResourcePage = () => {
     if (!formData.demandBudgetInfo.paymentConformation) {
       newErrors.paymentConformation = "Payment Confirmation is required";
     }
+    if (!formData.demandBudgetInfo?.budgetLevel) {
+      newErrors.budgetLevel = "Budget level is required";
+    }
+
 
     // Company Details validations
     if (!formData.companyDetails.clientName) {
       newErrors.clientName = "Client Name is required";
     }
-
+    if (!phoneNumber || !phoneNumber.isValid()) {
+      newErrors.leadContact = "Enter a valid phone number with country code";
+    }
     // Demand Interview Details validations
     if (!formData.demandInterviewDetails.modeOfInterview) {
       newErrors.modeOfInterview = "Interview Mode is required";
@@ -183,72 +221,66 @@ const AddResourcePage = () => {
     if (!formData.demandInterviewDetails.resourceStatus) {
       newErrors.resourceStatus = "Resource Status is required";
     }
+    if (!rounds || rounds < 1 || rounds > 10) {
+      newErrors.noOfInterviewRounds =
+        "Interview rounds must be between 1 and 10";
+    }
+
 
     // Special validation for L2 Payment Confirmation
- if (formData.demandBudgetInfo.paymentConformation === "L2") {
-  const files = formData.fileUploads?.paymentConfirmationDocumentPath;
-  if (!files || files.length === 0) {
-    newErrors.paymentConfirmationDocumentPath =
-      "Payment confirmation document is required for L2";
-  }
-}
+    if (formData.demandBudgetInfo.paymentConformation === "L2") {
+      if (!l2File) {
+        newErrors.paymentConfirmationDocumentPath =
+          "Payment confirmation document is required for L2";
+      }
+    }
 
-   setErrors(newErrors);
 
-  return newErrors;
+    setErrors(newErrors);
+
+    return newErrors;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("call handle ")
+
+  // handle Form Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
   const validationErrors = validateForm();
-  if (Object.keys(validationErrors).length > 0) return;
 
-  setIsSubmitting(true);
+console.log("validation errors", validationErrors);
 
-  try {
-    const payload = new FormData();
+if (Object.keys(validationErrors).length > 0) {
+  console.log("Form blocked due to errors");
+  return;
+}
 
-    // JSON data (without files)
-    const jsonData = {
-      ...formData,
-      fileUploads: undefined,
-    };
+console.log("Validation passed, calling API");
 
-    payload.append("data", JSON.stringify(jsonData));
 
-    // File only if L2
-    if (
-      formData.demandBudgetInfo.paymentConformation === "L2" &&
-      formData.fileUploads?.paymentConfirmationDocumentPath?.length > 0
-    ) {
-      payload.append(
-        "paymentConfirmationDocument",
-        formData.fileUploads.paymentConfirmationDocumentPath[0]
-      );
+    setIsSubmitting(true);
+
+    try {
+      console.log("after validation", formData)
+      const result = await addResources(formData, l2File);
+
+      if (result.success) {
+        alert("Resource added successfully!");
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Unexpected error");
+    } finally {
+      setIsSubmitting(false);
     }
-    console.log("Form Data in add Resource Page befor sending data to addResources ->  " , formData)
-     console.log("this pay load data value",payload)
-     const result = await addResources(payload);
-
-    if (result.success) {
-      alert("Resource added successfully!");
-      navigate("/iteration");
-    } else {
-      alert(result.message);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Unexpected error");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
+  };
 
 
 
   const handleInputChange = (section, field, value) => {
+    //console.log(section, field, value)
     setFormData((prev) => ({
       ...prev,
       [section]: {
@@ -268,24 +300,11 @@ const handleSubmit = async (e) => {
   };
 
   // Special handler for file uploads
-  const handleFileUpload = (field, files) => {
-    setFormData((prev) => ({
-      ...prev,
-      fileUploads: {
-        ...(prev.fileUploads || {}),
-        [field]: files,
-      },
-    }));
-
-    // Clear file upload error if exists
-    if (errors[field]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
+  const handleL2FileUpload = (file) => {
+    setL2File(file);
   };
+
+
 
   const handleResetForm = () => {
     if (
@@ -328,8 +347,9 @@ const handleSubmit = async (e) => {
         formData={formData}
         errors={errors}
         onInputChange={handleInputChange}
-        onFileUpload={handleFileUpload}
+        onFileUpload={handleL2FileUpload}
       />
+
 
       {/* Form Action Buttons at Bottom */}
       <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">

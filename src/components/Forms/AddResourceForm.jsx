@@ -1,5 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import FormInput from "./FormInput";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
 
 const AddResourceForm = ({
   formData = {},
@@ -33,16 +37,14 @@ const AddResourceForm = ({
   const showFileUpload =
     formData.demandBudgetInfo?.paymentConformation === "L2";
 
-  const handleFileUpload = (field, files) => {
-    setUploadedFiles((prev) => ({
-      ...prev,
-      [field]: files,
-    }));
-    // Pass to parent component
-    if (onFileUpload) {
-      onFileUpload(field, files);
-    }
+  const handleFileUpload = (file) => {
+    setUploadedFiles({
+      paymentConfirmationDocumentPath: file,
+    });
+
+    onFileUpload(file);
   };
+
 
   const sections = [
     {
@@ -56,51 +58,26 @@ const AddResourceForm = ({
             field: "demandCategory",
             value: formData.resourceDemandInfo?.demandCategory || "",
             error: errors.demandCategory,
-            options: [
-              "",
-              "IT",
-              "Non-IT",
-              "Engineering",
-              "Healthcare",
-              "Finance",
-              "Other",
-            ],
+            options: ["", "IT", "Non-IT", "Engineering", "Healthcare", "Finance", "Other"],
             required: true,
           },
           {
-            label: "No. of resources needed",
+            label: "Demand Type",
+            type: "select",
+            field: "demandType",
+            value: formData.resourceDemandInfo?.demandType || "",
+            error: errors.demandType,
+            options: ["", "Contract", "Permanent", "Temp to Perm", "Project Based"],
+            required: true,
+          },
+          {
+            label: "No. of Resources Needed",
             type: "number",
             field: "noOfResource",
             value: formData.resourceDemandInfo?.noOfResource || "",
             error: errors.noOfResource,
             min: 1,
             max: 100,
-            placeholder: "Enter number of resources",
-            required: true,
-          },
-          {
-            label: "Demand Technology",
-            type: "select",
-            field: "demandTechnologyName",
-            value: formData.resourceDemandInfo?.demandTechnologyName || "",
-            error: errors.demandTechnologyName,
-            options: [
-              "",
-              "Node.js",
-              "React",
-              "Python",
-              "Java",
-              ".NET",
-              "Angular",
-              "Vue.js",
-              "PHP",
-              "Ruby",
-              "Go",
-              "Swift",
-              "Kotlin",
-              "Flutter",
-              "React Native",
-            ],
             required: true,
           },
         ],
@@ -121,25 +98,42 @@ const AddResourceForm = ({
             ],
             required: true,
           },
-
           {
-            label: "Engagement",
+            label: "Engagement Type",
             type: "select",
             field: "engagement",
             value: formData.resourceDemandInfo?.engagement || "",
             error: errors.engagement,
+            options: ["", "Full Time", "Part Time", "Contract", "Freelance", "Internship"],
+            required: true,
+          },
+        ],
+        [
+          {
+            label: "Primary Technology",
+            type: "select",
+            field: "demandTechnologyName",
+            value: formData.resourceDemandInfo?.demandTechnologyName || "",
+            error: errors.demandTechnologyName,
             options: [
               "",
-              "Full Time",
-              "Part Time",
-              "Contract",
-              "Freelance",
-              "Internship",
+              "Node.js",
+              "React",
+              "Python",
+              "Java",
+              ".NET",
+              "Angular",
+              "Vue.js",
+              "PHP",
+              "Ruby",
+              "Go",
+              "Flutter",
+              "React Native",
             ],
             required: true,
           },
           {
-            label: "Demand Sub-Technology",
+            label: "Sub Technology",
             type: "select",
             field: "demandSubTechnologyName",
             value: formData.resourceDemandInfo?.demandSubTechnologyName || "",
@@ -153,23 +147,7 @@ const AddResourceForm = ({
               "Laravel",
               "Rails",
               "ASP.NET",
-              "Flask",
               "FastAPI",
-            ],
-            placeholder: "Select sub-technology if applicable",
-          },
-          {
-            label: "Demand Type",
-            type: "select",
-            field: "demandType",
-            value: formData.resourceDemandInfo?.demandType || "",
-            error: errors.demandType,
-            options: [
-              "",
-              "Contract",
-              "Permanent",
-              "Temp to Perm",
-              "Project Based",
             ],
             required: true,
           },
@@ -266,6 +244,7 @@ const AddResourceForm = ({
               "Not Required",
               "Inspiron",
             ],
+            required: true
           },
           {
             label: "Is BGV Required",
@@ -352,6 +331,7 @@ const AddResourceForm = ({
             field: "leadName",
             value: formData.clientDetails?.leadName || "",
             placeholder: "Enter lead contact name",
+            required: true,
           },
           {
             label: "Lead Contact",
@@ -360,6 +340,7 @@ const AddResourceForm = ({
             value: formData.clientDetails?.leadContact || "",
             placeholder: "Enter contact number (10 digits)",
             pattern: "[0-9]{10}",
+            required: true,
           },
           {
             label: "Experience Level",
@@ -374,6 +355,7 @@ const AddResourceForm = ({
               "8+ Years",
               "6 Years",
             ],
+            required: true,
           },
         ],
       ],
@@ -396,6 +378,7 @@ const AddResourceForm = ({
             type: "date",
             field: "billingEndDate",
             value: formData.demandDurationInfo?.billingEndDate || "",
+            required: true,
           },
         ],
         [
@@ -413,6 +396,7 @@ const AddResourceForm = ({
               "Flexible",
               "Project Based",
             ],
+            required: true,
           },
         ],
         [
@@ -437,37 +421,24 @@ const AddResourceForm = ({
             type: "select",
             field: "budgetType",
             value: formData.demandBudgetInfo?.budgetType || "",
-            error: errors.budgetType,
-            options: [
-              "",
-              "Monthly",
-              "Hourly",
-              "Project Based",
-              "Annual",
-              "Fixed",
-            ],
             required: true,
+            options: ["", "Monthly", "Hourly", "Project Based", "Annual"]
           },
           {
-            label: "Budget Currency",
+            label: "Currency",
             type: "select",
             field: "currency",
             value: formData.demandBudgetInfo?.currency || "",
-            error: errors.currency,
-            options: ["", "INR", "USD", "EUR", "GBP", "AUD", "CAD"],
             required: true,
+            options: ["", "INR", "USD", "EUR"]
           },
           {
-            label: "Budget",
+            label: "Budget Amount",
             type: "number",
             field: "budget",
             value: formData.demandBudgetInfo?.budget || "",
-            error: errors.budget,
-            placeholder: "Enter budget amount",
-            min: 0,
-            step: 1000,
-            required: true,
-          },
+            required: true
+          }
         ],
         [
           {
@@ -475,32 +446,24 @@ const AddResourceForm = ({
             type: "number",
             field: "profitMargin",
             value: formData.demandBudgetInfo?.profitMargin || "",
-            placeholder: "Enter profit margin percentage",
-            min: 0,
-            max: 100,
-            step: 0.5,
+            required: true
           },
           {
             label: "Payout Type",
             type: "select",
             field: "payoutType",
             value: formData.demandBudgetInfo?.payoutType || "",
-            options: [
-              "",
-              "Monthly",
-              "Bi-weekly",
-              "Weekly",
-              "Project Milestone",
-              "On Completion",
-            ],
+            required: true,
+            options: ["", "Monthly", "Weekly"]
           },
           {
-            label: "Budget Billing Start Date",
-            type: "date",
-            field: "demandBudgetBillingStartDate",
-            value:
-              formData.demandBudgetInfo?.demandBudgetBillingStartDate || "",
-          },
+            label: "Budget Level",
+            type: "select",
+            field: "budgetLevel",
+            value: formData.demandBudgetInfo?.budgetLevel || "",
+            required: true,
+            options: ["", "B1", "B2", "B3"]
+          }
         ],
         [
           {
@@ -508,22 +471,11 @@ const AddResourceForm = ({
             type: "select",
             field: "paymentConformation",
             value: formData.demandBudgetInfo?.paymentConformation || "",
-            error: errors.paymentConformation,
-            options: ["", "L1", "L2"],
             required: true,
+            options: ["", "L1", "L2"]
           },
-        ],
-        [
-          {
-            label: "Budget Note",
-            type: "textarea",
-            field: "demandBudgetNote",
-            value: formData.demandBudgetInfo?.demandBudgetNote || "",
-            placeholder: "Enter any notes regarding budget...",
-            rows: 3,
-          },
-        ],
-      ],
+        ]
+      ]
     },
     {
       title: "Demand Interview Details",
@@ -535,105 +487,99 @@ const AddResourceForm = ({
             type: "select",
             field: "modeOfInterview",
             value: formData.demandInterviewDetails?.modeOfInterview || "",
-            error: errors.modeOfInterview,
-            options: [
-              "",
-              "Online",
-              "In-person",
-              "Phone",
-              "Hybrid",
-              "Video Call",
-            ],
             required: true,
+            options: ["", "Online", "In-person", "Hybrid"]
           },
           {
-            label: "Interview Note",
-            type: "textarea",
-            field: "interviewNote",
-            value: formData.demandInterviewDetails?.interviewNote || "",
-            placeholder:
-              "Enter interview process details, rounds, and schedule...",
-            rows: 4,
-          },
+            label: "No. of Interview Rounds",
+            type: "number",
+            field: "noOfInterviewRounds",
+            value: formData.demandInterviewDetails?.noOfInterviewRounds || "",
+            required: true
+          }
         ],
+
         [
           {
-            label: "Budget Status",
+            label: "Written Test",
             type: "select",
-            field: "budgetStatus",
-            value: formData.demandInterviewDetails?.budgetStatus || "",
-            error: errors.budgetStatus,
-            options: [
-              "",
-              "Approved",
-              "Pending",
-              "In Review",
-              "Rejected",
-              "Negotiation",
-            ],
-            required: false,
+            field: "writtenTextisThere",
+            value: formData.demandInterviewDetails?.writtenTextisThere || "",
+            options: ["", "Yes", "No"]
           },
+          {
+            label: "Outside Candidate Allowed",
+            type: "select",
+            field: "outsideCandidateAllowed",
+            value: formData.demandInterviewDetails?.outsideCandidateAllowed || "",
+            options: ["", "Yes", "No"]
+          }
+        ],
+
+        [
+          {
+            label: "Assigned Channel",
+            type: "text",
+            field: "assignedChannel",
+            value: formData.demandInterviewDetails?.assignedChannel || ""
+          },
+          {
+            label: "Trial / Notes",
+            type: "textarea",
+            field: "trail",
+            value: formData.demandInterviewDetails?.trail || ""
+          }
+        ],
+
+        [
           {
             label: "Technical Profile",
-            type: "text",
+            type: "select",
             field: "techProfile",
             value: formData.demandInterviewDetails?.techProfile || "",
-            error: errors.techProfile,
-            placeholder: "Enter technical profile title",
             required: true,
+            options: ["", "Frontend", "Backend", "Full Stack", "Mobile"]
           },
-        ],
-        [
           {
             label: "Contract to Hire",
             type: "select",
             field: "contractToHire",
             value: formData.demandInterviewDetails?.contractToHire || "",
-            error: errors.contractToHire,
-            options: ["", "Yes", "No"],
             required: true,
-          },
+            options: ["", "Yes", "No"]
+          }
+        ],
+
+        [
           {
-            label: "Requirement Resource",
-            type: "select",
+            label: "Requirement Resource Timeline",
+            type: "text",
             field: "requirementResource",
             value: formData.demandInterviewDetails?.requirementResource || "",
-            error: errors.requirementResource,
-            options: [
-              "",
-              "Immediate",
-              "15 Days",
-              "30 Days",
-              "60 Days",
-              "90 Days",
-              "Flexible",
-            ],
-            required: true,
+            required: true
+          },
+          {
+            label: "Sales Person Name",
+            type: "text",
+            field: "nameOfTheSalesPerson",
+            value: formData.demandInterviewDetails?.nameOfTheSalesPerson || "",
+            required: true
           },
           {
             label: "Resource Status",
             type: "select",
             field: "resourceStatus",
             value: formData.demandInterviewDetails?.resourceStatus || "",
-            error: errors.resourceStatus,
-            options: ["Not Started", "In Progress", "Completed"],
             required: true,
-          },
-        ],
-        [
-          {
-            label: "Sales Person Name",
-            type: "text",
-            field: "nameOfTheSalesPerson",
-            value: formData.demandInterviewDetails?.nameOfTheSalesPerson || "",
-            error: errors.nameOfTheSalesPerson,
-            placeholder: "Enter sales person name",
-            required: true,
-          },
-        ],
-      ],
-    },
+            options: ["", "Open", "Closed", "On Hold"]
+          }
+        ]
+      ]
+    }
+
+
   ];
+
 
   const handleFieldChange = (sectionKey, field, value) => {
     onInputChange(sectionKey, field, value);
@@ -652,18 +598,58 @@ const AddResourceForm = ({
                 <div key={colIndex} className="space-y-4">
                   {column.map((field, fieldIndex) => (
                     <div key={fieldIndex}>
-                      <FormInput
-                        {...field}
-                        inputRef={(el) => {
-                          if (el) inputRefs.current[field.field] = el;
-                        }}
-                        onChange={(value) =>
-                          handleFieldChange(section.key, field.field, value)
-                        }
-                      />
+                      {section.key === "clientDetails" && field.field === "leadContact" ? (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Lead Contact <span className="text-red-500">*</span>
+                          </label>
 
+                          <PhoneInput
+                            country="in"
+                            value={formData.clientDetails?.leadContact || ""}
+                            onChange={(value, country) => {
+                              const phoneNumber = parsePhoneNumberFromString(
+                                `+${value}`,
+                                country.countryCode.toUpperCase()
+                              );
+
+                              if (phoneNumber && phoneNumber.isValid()) {
+                                handleFieldChange(
+                                  "clientDetails",
+                                  "leadContact",
+                                  phoneNumber.number // E.164 format
+                                );
+                              } else {
+                                handleFieldChange(
+                                  "clientDetails",
+                                  "leadContact",
+                                  `+${value}`
+                                );
+                              }
+                            }}
+                            inputStyle={{ width: "100%" }}
+                          />
+
+                          {errors.leadContact && (
+                            <p className="text-sm text-red-600 mt-1">
+                              {errors.leadContact}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <FormInput
+                          {...field}
+                          inputRef={(el) => {
+                            if (el) inputRefs.current[field.field] = el;
+                          }}
+                          onChange={(value) =>
+                            handleFieldChange(section.key, field.field, value)
+                          }
+                        />
+                      )}
                     </div>
                   ))}
+
                 </div>
               ))}
             </div>
@@ -707,10 +693,7 @@ const AddResourceForm = ({
                               type="file"
                               className="sr-only"
                               onChange={(e) =>
-                                handleFileUpload(
-                                  "paymentConfirmationDocumentPath",
-                                  e.target.files
-                                )
+                                handleFileUpload(e.target.files[0])
                               }
                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             />
@@ -728,15 +711,9 @@ const AddResourceForm = ({
                       </p>
                     )}
                     {uploadedFiles.paymentConfirmationDocumentPath && (
-                      <div className="mt-3">
-                        <p className="text-sm text-green-600 font-medium">
-                          ✓ File selected:{" "}
-                          {
-                            uploadedFiles.paymentConfirmationDocumentPath[0]
-                              ?.name
-                          }
-                        </p>
-                      </div>
+                      <p className="text-sm text-green-600">
+                        ✓ File selected: {uploadedFiles.paymentConfirmationDocumentPath.name}
+                      </p>
                     )}
                   </div>
                 </div>
