@@ -184,7 +184,7 @@ export default function ResouceComponents(props) {
               {/* Budget */}
               <div className="flex flex-col items-start justify-center">
                 <p className="text-[14px] font-medium">
-                  {updatedResource.demandBudgetId.budget}{" "}
+                  {updatedResource.demandBudgetId.budget}
                   {updatedResource.demandBudgetId.currency}
                 </p>
                 <span className="w-[80px] inline-block mt-2 px-2 py-[2px] text-[12px] rounded bg-[#4C6EF5] text-white text-center">
