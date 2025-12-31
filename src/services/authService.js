@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5000/api/authUser';
+import {authBaseURl} from "./mainBaseURLs"
+const API_BASE_URL = authBaseURl
 
 
 export const authService = {

@@ -1,5 +1,6 @@
 // Base URL configuration
-const API_BASE_URL = 'http://localhost:5000/api/resource/';
+import {resourceBaseURL} from "./mainBaseURLs"
+const API_BASE_URL = resourceBaseURL
 
 
 // const getAuthHeaders = () => {
