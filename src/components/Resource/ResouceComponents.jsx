@@ -18,6 +18,7 @@ export default function ResouceComponents(props) {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [candidateToUpdate, setCandidateToUpdate] = useState(null);
+  const [resumeUrl, setResumeUrl] = useState(null);
 
   console.log("updatedResource ----- ", updatedResource);
 
@@ -111,7 +112,7 @@ export default function ResouceComponents(props) {
           </div>
 
           {/* Card */}
-          <div className="flex-1 border border-[#E5E5E5] rounded-[8px] mb-6">
+          <div className="flex-1 border border-[#E5E5E5] rounded-[8px] mb-6 overflow-x-auto">
             {/* BGV */}
             <div className="px-6 py-3">
               {updatedResource.contractDetailsId.isBGVRequired === "Yes" ? (
@@ -123,7 +124,7 @@ export default function ResouceComponents(props) {
               )}
             </div>
             {/* Main Row */}
-            <div className="grid grid-cols-[280px_200px_160px_300px_180px_40px] px-6 py-4 items-start">
+            <div className="grid grid-cols-[minmax(200px,1.5fr)_minmax(150px,1fr)_minmax(120px,0.8fr)_minmax(250px,2fr)_minmax(150px,1fr)_40px] px-6 py-4 items-start gap-4">
               {/* Client */}
               <div>
                 <span className="inline-block mb-2 px-2 py-[2px] text-[12px] rounded bg-[#FF6B6B] text-white">
@@ -203,6 +204,7 @@ export default function ResouceComponents(props) {
                 isStarted={isStarted}
                 isProfilesUpdating={isProfilesUpdating}
                 setShowResumePopUp={setShowResumePopUp}
+                setResumeUrl={setResumeUrl}
                 handleUpdateStatus={handleUpdateStatus}
               />
 
@@ -358,8 +360,12 @@ export default function ResouceComponents(props) {
         />
         {showResumePopUp && (
           <ResumePopUp
-            onClose={() => setShowResumePopUp(false)}
-            resumeUrl="/Stockholm-Resume-Template-Simple.pdf"
+            resumeUrl={resumeUrl}
+            onClose={() => {
+              if (resumeUrl) URL.revokeObjectURL(resumeUrl); // 🧹 cleanup
+              setResumeUrl(null);
+              setShowResumePopUp(false);
+            }}
           />
         )}
       </div>

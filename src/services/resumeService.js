@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api/resource/';
+const API_BASE_URL = 'http://localhost:5000/api/resource/'; 
 
 // const getAuthHeaders = () => {
 //   console.log('getAuthHeaders called');
@@ -176,6 +176,40 @@ export const uploadResumeToDb = async (data) => {
     };
   } catch (error) {
     console.error("error in uploadResumeToDb", error);
+    return handleApiError(error);
+  }
+};
+
+export const getResumeFile = async (key) => {
+  console.log("key in getResumeFile", key);
+  try {
+    
+    const encodedKey = encodeURIComponent(key);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:5000/api/upload/getKeyWiseData/${encodedKey}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token,
+      },
+    });
+    if (!response.ok) {
+       throw new Error("Failed to fetch resume");
+    }
+
+    // ✅ Convert stream → Blob
+    const blob = await response.blob();
+
+    console.log("Blob type:", blob.type);
+    console.log("Blob size:", blob.size);
+
+    return {
+      success: true,
+      data: blob,
+      message: "Resume file retrieved successfully",
+    };
+  } catch (error) {
+    console.error("error in getResumeFile", error);
     return handleApiError(error);
   }
 };

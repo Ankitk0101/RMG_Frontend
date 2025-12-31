@@ -1,5 +1,5 @@
 import React from "react";
-
+import { getResumeFile } from "../../services/resumeService";
 const getFilteredCandidateTimelineStatus = (candidate) => {
   const filteredStatus = candidate?.candidateStatusTimeline?.filter(
     (status) => {
@@ -14,11 +14,30 @@ const getFilteredCandidateTimelineStatus = (candidate) => {
   return filteredStatus;
 };
 
+const onClickViewResume = async (
+  resumeRefPath,
+  setResumeUrl,
+  setShowResumePopUp
+) => {
+  try {
+    const response = await getResumeFile(resumeRefPath);
+
+    // Blob → URL
+    const fileUrl = URL.createObjectURL(response.data);
+    console.log("File URl in onClickViewResume -> ", fileUrl);
+    setResumeUrl(fileUrl);
+    setShowResumePopUp(true);
+  } catch (error) {
+    console.error("Failed to load resume", error);
+  }
+};
+
 export default function Lead({
   updatedResource,
   isStarted,
   isProfilesUpdating,
   setShowResumePopUp,
+  setResumeUrl, // ✅ ADD
   handleUpdateStatus,
 }) {
   if (isProfilesUpdating) {
@@ -124,7 +143,11 @@ export default function Lead({
                             className="w-full py-1.5 bg-[#5B6ACF] text-white text-[12px] rounded hover:bg-[#4854c7] transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setShowResumePopUp(true);
+                              onClickViewResume(
+                                candidate.resumeRefPath,
+                                setResumeUrl,
+                                setShowResumePopUp
+                              );
                             }}
                           >
                             View Resume

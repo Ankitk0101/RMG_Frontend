@@ -2,7 +2,7 @@
 
 export default function ResumePopUp({ onClose, resumeUrl }) {
   // Fallback to the local file in public folder if no URL provided
-  const viewerUrl = resumeUrl || "/Stockholm-Resume-Template-Simple.pdf";
+  const viewerUrl = resumeUrl;
 
   return (
     <div
