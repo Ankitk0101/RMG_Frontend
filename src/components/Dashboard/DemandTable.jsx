@@ -82,11 +82,11 @@ const DemandTable = () => {
 
               {/* Lead columns (as per Figma – no data available, default 0) */}
               <td className="border-r px-2 py-2 text-center">
-                {oneRow.leads[0].demandCount}
+                {oneRow?.leads?.length>=1?oneRow?.leads[0]?.demand:0}
               </td>
-              <td className="border-r px-2 py-2 text-center">0</td>
-              <td className="border-r px-2 py-2 text-center">0</td>
-              <td className="border-r px-2 py-2 text-center">0</td>
+              <td className="border-r px-2 py-2 text-center">{oneRow?.leads?.length>=2?oneRow?.leads[1]?.demand:0}</td>
+              <td className="border-r px-2 py-2 text-center">{oneRow?.leads?.length>=3?oneRow?.leads[2]?.demand:0}</td>
+              <td className="border-r px-2 py-2 text-center">{oneRow?.leads?.length>=4?oneRow?.leads[3]?.demand:0}</td>
               <td className="border-r px-2 py-2 text-center">
                 {oneRow.status.pending}
               </td>
@@ -104,7 +104,7 @@ const DemandTable = () => {
               <td className="border-r px-2 py-2 text-center">
                 {oneRow.status.fulfilled}
               </td>
-              <td className="px-2 py-2 text-center">0</td>
+              <td className="px-2 py-2 text-center">{oneRow.status.noAction}</td>
             </tr>
           ))}
         </tbody>
