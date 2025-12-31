@@ -103,6 +103,9 @@ const AddResourcePage = () => {
     if (!formData.resourceDemandInfo.demandTechnologyName) {
       newErrors.demandTechnologyName = "Demand Technology is required";
     }
+    if (!formData.resourceDemandInfo.demandSubTechnologyName) {
+      newErrors.demandSubTechnologyName = "Demand Sub Technology is required";
+    }
     if (!formData.resourceDemandInfo.demandLevel) {
       newErrors.demandLevel = "Demand Level is required";
     }
@@ -138,11 +141,22 @@ const AddResourcePage = () => {
     if (!formData.contractDetails.clientBGV_Verify) {
       newErrors.clientBGV_Verify = "Client BGV Verification is required";
     }
+    if (!formData.contractDetails.laptopProvideBy) {
+      newErrors.laptopProvideBy = "Laptop provider is required";
+    }
+
+
 
     // Demand Job Details validations
-    if (!formData.demandJobDetails.jobDescription) {
+    const jobDesc = formData.demandJobDetails.jobDescription?.trim();
+
+    if (!jobDesc) {
       newErrors.jobDescription = "Job Description is required";
+    } else if (jobDesc.length < 10) {
+      newErrors.jobDescription =
+        "Job Description must be at least 10 characters";
     }
+
 
     if (!formData.clientDetails.leadName) {
       newErrors.leadName = "Lead name is required";
@@ -150,6 +164,12 @@ const AddResourcePage = () => {
 
     if (!formData.clientDetails.experienceLevel) {
       newErrors.experienceLevel = "Experience level is required";
+    }
+
+    if (!formData.clientDetails.leadContact) {
+      newErrors.leadContact = "Lead contact number is required";
+    } else if (!phoneNumber || !phoneNumber.isValid()) {
+      newErrors.leadContact = "Enter a valid phone number with country code";
     }
 
 
@@ -192,7 +212,12 @@ const AddResourcePage = () => {
     if (!formData.demandBudgetInfo?.budgetLevel) {
       newErrors.budgetLevel = "Budget level is required";
     }
+    if (!formData.demandBudgetInfo.demandBudgetBillingStartDate) {
+      newErrors.demandBudgetBillingStartDate =
+        "Budget billing start date is required";
+    }
 
+    
 
     // Company Details validations
     if (!formData.companyDetails.clientName) {
@@ -225,6 +250,31 @@ const AddResourcePage = () => {
       newErrors.noOfInterviewRounds =
         "Interview rounds must be between 1 and 10";
     }
+    if (!formData.demandInterviewDetails.assignedChannel) {
+      newErrors.assignedChannel = "Assigned channel is required";
+    }
+
+
+    if (!formData.demandInterviewDetails.interviewNote) {
+      newErrors.interviewNote = "Interview note is required";
+    }
+
+    if (!formData.demandInterviewDetails.budgetStatus) {
+      newErrors.budgetStatus = "Budget status is required";
+    }
+
+    if (!formData.demandInterviewDetails.writtenTextisThere) {
+      newErrors.writtenTextisThere = "Written test status is required";
+    }
+
+    if (!formData.demandInterviewDetails.outsideCandidateAllowed) {
+      newErrors.outsideCandidateAllowed =
+        "Outside candidate permission is required";
+    }
+
+    if (!formData.demandInterviewDetails.assignedChannel) {
+      newErrors.assignedChannel = "Assigned channel is required";
+    }
 
 
     // Special validation for L2 Payment Confirmation
@@ -246,16 +296,16 @@ const AddResourcePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  const validationErrors = validateForm();
+    const validationErrors = validateForm();
 
-console.log("validation errors", validationErrors);
+    console.log("validation errors", validationErrors);
 
-if (Object.keys(validationErrors).length > 0) {
-  console.log("Form blocked due to errors");
-  return;
-}
+    if (Object.keys(validationErrors).length > 0) {
+      console.log("Form blocked due to errors");
+      return;
+    }
 
-console.log("Validation passed, calling API");
+    console.log("Validation passed, calling API");
 
 
     setIsSubmitting(true);
@@ -270,8 +320,7 @@ console.log("Validation passed, calling API");
         alert(result.message);
       }
     } catch (err) {
-      console.error(err);
-      alert("Unexpected error");
+      console.log(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -302,6 +351,12 @@ console.log("Validation passed, calling API");
   // Special handler for file uploads
   const handleL2FileUpload = (file) => {
     setL2File(file);
+
+    setErrors(prev => {
+      const e = { ...prev };
+      delete e.paymentConfirmationDocumentPath;
+      return e;
+    });
   };
 
 
@@ -354,13 +409,6 @@ console.log("Validation passed, calling API");
       {/* Form Action Buttons at Bottom */}
       <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
         <button
-          className="px-6 py-2.5 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer font-medium"
-          onClick={handleResetForm}
-          type="button"
-        >
-          Reset Form
-        </button>
-        <button
           className="px-10 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg cursor-pointer font-medium"
           onClick={handleSubmit}
           disabled={isSubmitting}
@@ -368,6 +416,15 @@ console.log("Validation passed, calling API");
         >
           {isSubmitting ? "Submitting..." : "Submit Resource"}
         </button>
+
+        <button
+          className="px-6 py-2.5 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer font-medium"
+          onClick={handleResetForm}
+          type="button"
+        >
+          Reset Form
+        </button>
+
       </div>
     </div>
   );

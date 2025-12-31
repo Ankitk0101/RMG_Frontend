@@ -137,6 +137,7 @@ const AddResourceForm = ({
             type: "select",
             field: "demandSubTechnologyName",
             value: formData.resourceDemandInfo?.demandSubTechnologyName || "",
+            error: errors.demandSubTechnologyName,
             options: [
               "",
               "Express.js",
@@ -236,6 +237,7 @@ const AddResourceForm = ({
             type: "select",
             field: "laptopProvideBy",
             value: formData.contractDetails?.laptopProvideBy || "",
+            error: errors.laptopProvideBy,
             options: [
               "",
               "Company",
@@ -271,8 +273,10 @@ const AddResourceForm = ({
             type: "textarea",
             field: "BGVNote",
             value: formData.contractDetails?.BGVNote || "",
+            error: errors.BGVNote,
             placeholder: "Enter any notes regarding BGV process...",
             rows: 3,
+            equired: true,
           },
         ],
       ],
@@ -311,10 +315,11 @@ const AddResourceForm = ({
             required: true,
           },
           {
-            label: "Client Linked ID",
+            label: "Client Linkedin ID",
             type: "text",
             field: "clientLinkedId",
             value: formData.companyDetails?.clientLinkedId || "",
+            error: errors.clientLinkedId,
             placeholder: "Enter client LinkedIn ID or reference",
           },
         ],
@@ -330,6 +335,7 @@ const AddResourceForm = ({
             type: "text",
             field: "leadName",
             value: formData.clientDetails?.leadName || "",
+            error: errors.leadName,
             placeholder: "Enter lead contact name",
             required: true,
           },
@@ -338,6 +344,7 @@ const AddResourceForm = ({
             type: "tel",
             field: "leadContact",
             value: formData.clientDetails?.leadContact || "",
+            error: errors.leadContact,
             placeholder: "Enter contact number (10 digits)",
             pattern: "[0-9]{10}",
             required: true,
@@ -347,6 +354,7 @@ const AddResourceForm = ({
             type: "select",
             field: "experienceLevel",
             value: formData.clientDetails?.experienceLevel || "",
+            error: errors.experienceLevel,
             options: [
               "",
               "0-2 Years",
@@ -378,6 +386,7 @@ const AddResourceForm = ({
             type: "date",
             field: "billingEndDate",
             value: formData.demandDurationInfo?.billingEndDate || "",
+            error: errors.billingEndDate,
             required: true,
           },
         ],
@@ -387,6 +396,7 @@ const AddResourceForm = ({
             type: "select",
             field: "tentativeDuration",
             value: formData.demandDurationInfo?.tentativeDuration || "",
+            error: errors.tentativeDuration,
             options: [
               "",
               "1 Month",
@@ -405,6 +415,7 @@ const AddResourceForm = ({
             type: "textarea",
             field: "demandDurationNote",
             value: formData.demandDurationInfo?.demandDurationNote || "",
+            error: errors.demandDurationNote,
             placeholder: "Enter any notes regarding project duration...",
             rows: 3,
           },
@@ -421,6 +432,7 @@ const AddResourceForm = ({
             type: "select",
             field: "budgetType",
             value: formData.demandBudgetInfo?.budgetType || "",
+            error: errors.budgetType,
             required: true,
             options: ["", "Monthly", "Hourly", "Project Based", "Annual"]
           },
@@ -429,6 +441,7 @@ const AddResourceForm = ({
             type: "select",
             field: "currency",
             value: formData.demandBudgetInfo?.currency || "",
+            error: errors.currency,
             required: true,
             options: ["", "INR", "USD", "EUR"]
           },
@@ -437,6 +450,7 @@ const AddResourceForm = ({
             type: "number",
             field: "budget",
             value: formData.demandBudgetInfo?.budget || "",
+            error: errors.budget,
             required: true
           }
         ],
@@ -446,6 +460,7 @@ const AddResourceForm = ({
             type: "number",
             field: "profitMargin",
             value: formData.demandBudgetInfo?.profitMargin || "",
+            error: errors.profitMargin,
             required: true
           },
           {
@@ -454,6 +469,7 @@ const AddResourceForm = ({
             field: "payoutType",
             value: formData.demandBudgetInfo?.payoutType || "",
             required: true,
+            error: errors.payoutType,
             options: ["", "Monthly", "Weekly"]
           },
           {
@@ -461,6 +477,7 @@ const AddResourceForm = ({
             type: "select",
             field: "budgetLevel",
             value: formData.demandBudgetInfo?.budgetLevel || "",
+            error: errors.budgetLevel,
             required: true,
             options: ["", "B1", "B2", "B3"]
           }
@@ -470,6 +487,7 @@ const AddResourceForm = ({
             type: "date",
             field: "demandBudgetBillingStartDate",
             value: formData.demandBudgetInfo?.demandBudgetBillingStartDate || "",
+            error: errors.demandBudgetBillingStartDate,
             required: true
           }
         ],
@@ -488,6 +506,7 @@ const AddResourceForm = ({
             type: "select",
             field: "paymentConformation",
             value: formData.demandBudgetInfo?.paymentConformation || "",
+            error: errors.paymentConformation,
             required: true,
             options: ["", "L1", "L2"]
           },
@@ -504,6 +523,7 @@ const AddResourceForm = ({
             type: "select",
             field: "modeOfInterview",
             value: formData.demandInterviewDetails?.modeOfInterview || "",
+            error: errors.modeOfInterview,
             required: true,
             options: ["", "Online", "In-person", "Hybrid"]
           },
@@ -512,6 +532,7 @@ const AddResourceForm = ({
             type: "number",
             field: "noOfInterviewRounds",
             value: formData.demandInterviewDetails?.noOfInterviewRounds || "",
+            error: errors.noOfInterviewRounds,
             required: true
           }
         ],
@@ -522,6 +543,7 @@ const AddResourceForm = ({
             type: "select",
             field: "writtenTextisThere",
             value: formData.demandInterviewDetails?.writtenTextisThere || "",
+            error: errors.writtenTextisThere,
             options: ["", "Yes", "No"],
             required: true,
           },
@@ -530,6 +552,7 @@ const AddResourceForm = ({
             type: "select",
             field: "outsideCandidateAllowed",
             value: formData.demandInterviewDetails?.outsideCandidateAllowed || "",
+            error: errors.outsideCandidateAllowed,
             options: ["", "Yes", "No"],
             required: true,
           }
@@ -541,13 +564,16 @@ const AddResourceForm = ({
             type: "text",
             field: "assignedChannel",
             value: formData.demandInterviewDetails?.assignedChannel || "",
+            error: errors.assignedChannel,
             required: true,
           },
           {
             label: "Trial / Notes",
             type: "textarea",
             field: "trail",
-            value: formData.demandInterviewDetails?.trail || ""
+            value: formData.demandInterviewDetails?.trail || "",
+            error: errors.trail,
+            required: true,
           }
         ],
 
@@ -557,6 +583,7 @@ const AddResourceForm = ({
             type: "select",
             field: "techProfile",
             value: formData.demandInterviewDetails?.techProfile || "",
+            error: errors.techProfile,
             required: true,
             options: ["", "Frontend", "Backend", "Full Stack", "Mobile"]
           },
@@ -565,6 +592,7 @@ const AddResourceForm = ({
             type: "select",
             field: "contractToHire",
             value: formData.demandInterviewDetails?.contractToHire || "",
+            error: errors.contractToHire,
             required: true,
             options: ["", "Yes", "No"]
           }
@@ -574,6 +602,7 @@ const AddResourceForm = ({
             type: "textarea",
             field: "interviewNote",
             value: formData.demandInterviewDetails?.interviewNote || "",
+            error: errors.interviewNote,
             required: true,
             rows: 3
           },
@@ -582,6 +611,7 @@ const AddResourceForm = ({
             type: "select",
             field: "budgetStatus",
             value: formData.demandInterviewDetails?.budgetStatus || "",
+            error: errors.budgetStatus,
             required: true,
             options: ["", "Approved", "Pending", "Rejected"]
           }
@@ -593,6 +623,7 @@ const AddResourceForm = ({
             type: "select",
             field: "requirementResource",
             value: formData.demandInterviewDetails?.requirementResource || "",
+            error: errors.requirementResource,
             required: true,
             options: [
               "",
@@ -608,6 +639,7 @@ const AddResourceForm = ({
             type: "text",
             field: "nameOfTheSalesPerson",
             value: formData.demandInterviewDetails?.nameOfTheSalesPerson || "",
+            error: errors.nameOfTheSalesPerson,
             required: true
           },
           {
@@ -615,6 +647,7 @@ const AddResourceForm = ({
             type: "select",
             field: "resourceStatus",
             value: formData.demandInterviewDetails?.resourceStatus || "",
+            error: errors.resourceStatus,
             required: true,
             options: ["", "Open", "Closed", "On Hold"]
           }
@@ -684,6 +717,7 @@ const AddResourceForm = ({
                       ) : (
                         <FormInput
                           {...field}
+                          forceShowError={Object.keys(errors).length > 0}
                           inputRef={(el) => {
                             if (el) inputRefs.current[field.field] = el;
                           }}

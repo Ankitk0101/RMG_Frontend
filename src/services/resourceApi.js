@@ -128,9 +128,17 @@ export const addResources = async (formData, l2File) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
-
+//   const data=await res.json()
+// console.log('response',data.errors[0].message)
   if (!res.ok) {
-    throw new Error("Add resource failed");
+     const errorData = await res.json();
+       const errorMessage = errorData.errors[0].message|| "Add resource failed";
+
+       alert(errorMessage);
+      console.error("Error details:", errorData);
+
+       // 3. Throw the error to stop further execution
+       throw new Error(errorMessage);
   }
 
   return res.json();

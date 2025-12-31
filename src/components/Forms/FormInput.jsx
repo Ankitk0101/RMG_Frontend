@@ -6,6 +6,7 @@ const FormInput = ({
   description,
   type = 'text',
   field,
+  forceShowError,
   value,
   error,
   inputRef,
@@ -62,7 +63,7 @@ const FormInput = ({
     setIsFocused(true);
   };
 
-  const showError = isTouched && error;
+  const showError = (isTouched || forceShowError) && error;
 
   const renderInput = () => {
     const commonClasses = `w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-all text-sm ${showError
