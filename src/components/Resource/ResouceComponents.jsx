@@ -94,13 +94,13 @@ export default function ResouceComponents(props) {
   return (
     <>
       <div key={index}>
-        <div className="relative flex">
+        <div className="relative flex hover:z-50">
           {/* Timeline */}
           {/* Timeline */}
           <div className="relative w-[40px] flex justify-center shrink-0">
             <div className="absolute top-0 bottom-0 w-[5px] bg-[#5B6ACF] rounded-full"></div>
             {showClientId && (
-              <div className="relative z-10 top-0 w-[24px] h-[160px] rounded-full bg-[#5B6ACF] flex items-center justify-center shadow-sm">
+              <div className="relative z-10 w-[24px] h-[180px] mt-6 mb-2 rounded-full bg-[#5B6ACF] flex items-center justify-center shadow-sm">
                 <span className="text-white text-[12px] font-medium -rotate-90 whitespace-nowrap tracking-wide">
                   {
                     updatedResource.resourceDemandInfoId.leadId.clientId
@@ -112,7 +112,7 @@ export default function ResouceComponents(props) {
           </div>
 
           {/* Card */}
-          <div className="flex-1 border border-[#E5E5E5] rounded-[8px] mb-6 overflow-x-auto">
+          <div className="flex-1 border border-[#E5E5E5] rounded-[8px] mb-6">
             {/* BGV */}
             <div className="px-6 py-3">
               {updatedResource.contractDetailsId.isBGVRequired === "Yes" ? (

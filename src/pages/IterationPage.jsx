@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import ResouceComponents from "../components/Resource/ResouceComponents";
 import { getAllResource } from "../services/resourceApi";
 
-/* ================= API STATUS CONSTANTS ================= */
 const API_CONSTANT_STATUS = {
   IDLE: "IDLE",
   LOADING: "LOADING",
@@ -38,14 +37,18 @@ export default function IterationPage() {
   return (
     <div className="bg-white rounded-xl shadow-sm min-h-full">
       <div className="w-full">
-        <div className="max-w-[1280px] mx-auto py-8">
+        <div className="w-full py-8 pr-10">
           {/* Column Headers */}
-          <div className="grid grid-cols-[320px_200px_160px_300px_180px_40px] text-[14px] text-[#6C6E70] mb-4 px-6">
-            <p>Client</p>
-            <p>Job description</p>
-            <p>Budget</p>
-            <p>Profile</p>
-            <p>Duration</p>
+          <div className="flex">
+            <div className="w-[40px] shrink-0" />{" "}
+            {/* Spacer to align with Timeline */}
+            <div className="flex-1 grid grid-cols-[minmax(200px,1.5fr)_minmax(150px,1fr)_minmax(120px,0.8fr)_minmax(250px,2fr)_minmax(150px,1fr)_40px] text-[14px] text-[#6C6E70] mb-4 px-6 gap-4">
+              <p>Client</p>
+              <p>Job description</p>
+              <p>Budget</p>
+              <p>Profile</p>
+              <p>Duration</p>
+            </div>
           </div>
 
           {/*  Loader – ONLY while BE call is in progress */}

@@ -60,39 +60,6 @@ const StatsCards = () => {
     fetchStats();
   }, []);
 
-  const getTrendIcon = (label) => {
-    const trendData = {
-      "Total Demand": {
-        icon: <TrendingUp size={16} />,
-        color: "text-green-500",
-      },
-      "New Requirement": {
-        icon: <TrendingUp size={16} />,
-        color: "text-green-500",
-      },
-      Replacement: { icon: <Minus size={16} />, color: "text-yellow-500" },
-      "Interview Selection": {
-        icon: <TrendingUp size={16} />,
-        color: "text-green-500",
-      },
-    };
-
-    return (
-      trendData[label] || { icon: <Minus size={16} />, color: "text-gray-500" }
-    );
-  };
-
-  const getPercentage = (label) => {
-    const percentages = {
-      "Total Demand": "+10%",
-      "New Requirement": "+5%",
-      Replacement: "0%",
-      "Interview Selection": "+8%",
-    };
-
-    return percentages[label] || "+0%";
-  };
-
   if (apiStatus === API_CONSTANT_STATUS.ERROR) {
     return <p className="text-red-500">{error}</p>;
   }
@@ -100,9 +67,6 @@ const StatsCards = () => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {stats.map((stat) => {
-        const trend = getTrendIcon(stat.label);
-        const percentage = getPercentage(stat.label);
-
         return (
           <div
             key={stat.label}
@@ -113,10 +77,6 @@ const StatsCards = () => {
                 className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center`}
               >
                 <div className="w-4 h-4 bg-white rounded-full"></div>
-              </div>
-              <div className={`${trend.color} flex items-center gap-1`}>
-                {trend.icon}
-                <span className="text-xs font-medium">{percentage}</span>
               </div>
             </div>
 

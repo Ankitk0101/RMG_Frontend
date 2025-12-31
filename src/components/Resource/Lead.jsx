@@ -99,7 +99,7 @@ export default function Lead({
                           title={status}
                         />
                         {/* Tooltip Popup */}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-[#E5E5E5] rounded-lg shadow-xl p-4 hidden group-hover:block z-100">
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-[#E5E5E5] rounded-lg shadow-xl p-4 hidden group-hover:block z-9999">
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <p className="text-[14px] font-semibold text-[#1C1C1C]">
@@ -153,8 +153,8 @@ export default function Lead({
                             View Resume
                           </button>
 
-                          {/* Arrow tail */}
-                          <div className="absolute left-1/2 -top-[5px] -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-[#E5E5E5] transform rotate-45"></div>
+                          {/* Arrow tip pointing to status */}
+                          <div className="absolute left-1/2 -top-[6px] -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-[#E5E5E5] transform rotate-45"></div>
                         </div>
                       </div>
                     );
