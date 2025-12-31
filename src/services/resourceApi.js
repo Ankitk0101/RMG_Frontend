@@ -83,23 +83,25 @@ const handleApiError = (error) => {
 
 export const addResources = async (formData, l2File) => {
   const isL2 = formData.demandBudgetInfo.paymentConformation === "L2";
-
   let paymentDocumentUrl = "";
 
-  // 🔹 Upload ONLY if L2
   if (isL2) {
     if (!l2File) {
       throw new Error("L2 requires payment confirmation document");
     }
 
     const fd = new FormData();
-    fd.append("file", l2File);
+
+    const customFileName = `payments_${Date.now()}_${l2File.name}`;
+
+    fd.append("file", l2File, customFileName);
+    fd.append("type", "payments");  
 
     const uploadRes = await fetch(
-      "http://localhost:5000/upload-conformation",
+      "http://localhost:5000/api/upload/upload-conformation",
       {
         method: "POST",
-        body: fd,
+        body: fd,  
       }
     );
 
@@ -108,20 +110,18 @@ export const addResources = async (formData, l2File) => {
     }
 
     const uploadData = await uploadRes.json();
+    console.log("this file upload ",uploadData)
     paymentDocumentUrl = uploadData.path;
   }
 
-  // 🔹 Final payload (clean)
+  
   const payload = {
-  ...formData,
-  demandBudgetInfo: {
-    ...formData.demandBudgetInfo,
-    paymentConformationDocumentPath:
-      formData.demandBudgetInfo.paymentConformation === "L2"
-        ? paymentDocumentUrl
-        : "",
-  },
-};
+    ...formData,
+    demandBudgetInfo: {
+      ...formData.demandBudgetInfo,
+      paymentConformationDocumentPath: isL2 ? paymentDocumentUrl : "",
+    },
+  };
 
   const res = await fetch(API_BASE_URL + "add-resource", {
     method: "POST",
@@ -135,6 +135,7 @@ export const addResources = async (formData, l2File) => {
 
   return res.json();
 };
+
 
 
 

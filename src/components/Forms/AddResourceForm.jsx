@@ -110,7 +110,7 @@ const AddResourceForm = ({
         ],
         [
           {
-            label: "Primary Technology",
+            label: "Demand Technology",
             type: "select",
             field: "demandTechnologyName",
             value: formData.resourceDemandInfo?.demandTechnologyName || "",
@@ -133,7 +133,7 @@ const AddResourceForm = ({
             required: true,
           },
           {
-            label: "Sub Technology",
+            label: "Demand Sub Technology",
             type: "select",
             field: "demandSubTechnologyName",
             value: formData.resourceDemandInfo?.demandSubTechnologyName || "",
@@ -297,7 +297,7 @@ const AddResourceForm = ({
       ],
     },
     {
-      title: "Company Details",
+      title: "Client Details",
       key: "companyDetails",
       columns: [
         [
@@ -321,7 +321,7 @@ const AddResourceForm = ({
       ],
     },
     {
-      title: "Client Details",
+      title: "Lead Details",
       key: "clientDetails",
       columns: [
         [
@@ -464,6 +464,23 @@ const AddResourceForm = ({
             required: true,
             options: ["", "B1", "B2", "B3"]
           }
+        ], [
+          {
+            label: "Budget Billing Start Date",
+            type: "date",
+            field: "demandBudgetBillingStartDate",
+            value: formData.demandBudgetInfo?.demandBudgetBillingStartDate || "",
+            required: true
+          }
+        ],
+        [
+          {
+            label: "Budget Note",
+            type: "textarea",
+            field: "demandBudgetNote",
+            value: formData.demandBudgetInfo?.demandBudgetNote || "",
+            rows: 3
+          }
         ],
         [
           {
@@ -505,14 +522,16 @@ const AddResourceForm = ({
             type: "select",
             field: "writtenTextisThere",
             value: formData.demandInterviewDetails?.writtenTextisThere || "",
-            options: ["", "Yes", "No"]
+            options: ["", "Yes", "No"],
+            required: true,
           },
           {
             label: "Outside Candidate Allowed",
             type: "select",
             field: "outsideCandidateAllowed",
             value: formData.demandInterviewDetails?.outsideCandidateAllowed || "",
-            options: ["", "Yes", "No"]
+            options: ["", "Yes", "No"],
+            required: true,
           }
         ],
 
@@ -521,7 +540,8 @@ const AddResourceForm = ({
             label: "Assigned Channel",
             type: "text",
             field: "assignedChannel",
-            value: formData.demandInterviewDetails?.assignedChannel || ""
+            value: formData.demandInterviewDetails?.assignedChannel || "",
+            required: true,
           },
           {
             label: "Trial / Notes",
@@ -548,15 +568,40 @@ const AddResourceForm = ({
             required: true,
             options: ["", "Yes", "No"]
           }
+        ], [
+          {
+            label: "Interview Note",
+            type: "textarea",
+            field: "interviewNote",
+            value: formData.demandInterviewDetails?.interviewNote || "",
+            required: true,
+            rows: 3
+          },
+          {
+            label: "Budget Status",
+            type: "select",
+            field: "budgetStatus",
+            value: formData.demandInterviewDetails?.budgetStatus || "",
+            required: true,
+            options: ["", "Approved", "Pending", "Rejected"]
+          }
         ],
 
         [
           {
             label: "Requirement Resource Timeline",
-            type: "text",
+            type: "select",
             field: "requirementResource",
             value: formData.demandInterviewDetails?.requirementResource || "",
-            required: true
+            required: true,
+            options: [
+              "",
+              "Immediate",
+              "Within 7 Days",
+              "Within 15 Days",
+              "Within 30 Days",
+              "Flexible"
+            ]
           },
           {
             label: "Sales Person Name",
