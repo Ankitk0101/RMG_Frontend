@@ -6,28 +6,31 @@ export default function ResumePopUp({ onClose, resumeUrl }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
-      {/* Modal Content */}
       <div
-        className="bg-white w-[80%] h-[85%] rounded-lg relative"
+        className="bg-white w-[85%] h-[90%] rounded-xl shadow-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-xl font-bold text-gray-600"
-        >
-          ✕
-        </button>
+        {/* Header bar for close button to avoid overlap with iframe controls */}
+        <div className="flex justify-end items-center p-2 bg-gray-50 border-b">
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 text-gray-600 transition-all text-xl"
+            title="Close"
+          >
+            ✕
+          </button>
+        </div>
 
-        {/* Resume Viewer */}
-        <iframe
-          src={viewerUrl}
-          title="Resume Viewer"
-          className="w-full h-full rounded-lg"
-        />
+        <div className="flex-1">
+          <iframe
+            src={viewerUrl}
+            title="Resume Viewer"
+            className="w-full h-full border-none"
+          />
+        </div>
       </div>
     </div>
   );

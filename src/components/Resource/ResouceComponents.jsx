@@ -246,10 +246,7 @@ export default function ResouceComponents(props) {
             </div>
             <div className="px-6 py-2 flex justify-end">
               <Link to={`/kyc/${updatedResource._id}`}>
-                <button
-                  onClick={""}
-                  className="px-3 py-1.5 text-[12px] font-medium text-white bg-[#5B6ACF] rounded hover:bg-[#4854c7] transition-colors mr-1"
-                >
+                <button className="px-3 py-1.5 text-[12px] font-medium text-white bg-[#5B6ACF] rounded hover:bg-[#4854c7] transition-colors mr-1">
                   View KYC
                 </button>
               </Link>
