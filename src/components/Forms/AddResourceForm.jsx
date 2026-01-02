@@ -332,7 +332,7 @@ const AddResourceForm = ({
             required: true,
           },
           {
-            label: "Campaign",
+            label: "Campain",
             type: "text",
             field: "clientLinkedId",
             value: formData.companyDetails?.clientLinkedId || "",
