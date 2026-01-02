@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import UploadProfilePopUp from "./UploadProfilePopUp";
 import UpdateStatusPopUp from "./UpdateStatusPopUp";
 import Lead from "./Lead";
+import { useAuth } from "../../context/AuthContext";
+import { updateDemandBudget } from "../../services/demandBudgetService";
 
 export default function ResouceComponents(props) {
   console.log("ResouceComponents Called");
-  const { index, showClientId, oneResource } = props;
+  const { user } = useAuth();
+  const { showClientId, oneResource } = props;
   const [isProfilesUpdating, setIsProfilesUpdating] = useState(false);
   const [updatedResource, setUpdatedResource] = useState(oneResource);
   console.log("resource ---- from BE ->  ", updatedResource);
@@ -19,12 +22,45 @@ export default function ResouceComponents(props) {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [candidateToUpdate, setCandidateToUpdate] = useState(null);
   const [resumeUrl, setResumeUrl] = useState(null);
+  const [budgetLevelLoading, setBudgetLevelLoading] = useState(false);
 
   console.log("updatedResource ----- ", updatedResource);
 
   const handleUpdateStatus = (candidateId, currentTimeline) => {
     setCandidateToUpdate({ candidateId, currentTimeline });
     setShowStatusModal(true);
+  };
+
+  const handleBudgetLevelChange = async (e) => {
+    const newBudgetLevel = e.target.value;
+
+    try {
+      setBudgetLevelLoading(true);
+      const updateBudgetResponse = await updateDemandBudget(
+        updatedResource.demandBudgetId._id,
+        {
+          budgetLevel: newBudgetLevel,
+        }
+      );
+      if (updateBudgetResponse.success) {
+        setTimeout(() => {
+          setUpdatedResource((prev) => ({
+            ...prev,
+            demandBudgetId: {
+              ...updateBudgetResponse.demandBudgetDoc,
+            },
+          }));
+          setBudgetLevelLoading(false);
+        }, 3000);
+      } else {
+        alert("Failed to update budget level: " + updateBudgetResponse.message);
+        setBudgetLevelLoading(false);
+      }
+    } catch (error) {
+      console.error("Error updating budget level:", error);
+      alert("Error updating budget level");
+      setBudgetLevelLoading(false);
+    }
   };
 
   function formatDate(dateString) {
@@ -84,7 +120,7 @@ export default function ResouceComponents(props) {
       diffDays
     )} days Still Not Started (${formattedDate})`;
   }
-  // Helper to check if started
+
   const isResourceStarted = () => {
     return updatedResource?.resumesOfThisResource?.length > 0;
   };
@@ -93,9 +129,8 @@ export default function ResouceComponents(props) {
 
   return (
     <>
-      <div key={index}>
+      <div key={oneResource._id}>
         <div className="relative flex hover:z-50">
-          {/* Timeline */}
           {/* Timeline */}
           <div className="relative w-[40px] flex justify-center shrink-0">
             <div className="absolute top-0 bottom-0 w-[5px] bg-[#5B6ACF] rounded-full"></div>
@@ -185,6 +220,7 @@ export default function ResouceComponents(props) {
               <div className="flex flex-col items-start justify-center">
                 <p className="text-[14px] font-medium">
                   {updatedResource.demandBudgetId.budget}
+                  {"  "}
                   {updatedResource.demandBudgetId.currency}
                 </p>
                 <span className="w-[80px] inline-block mt-2 px-2 py-[2px] text-[12px] rounded bg-[#4C6EF5] text-white text-center">
@@ -193,9 +229,28 @@ export default function ResouceComponents(props) {
                 <span className="w-[80px] inline-block mt-1 px-2 py-[2px] text-[12px] rounded bg-[#FAB005] text-white text-center">
                   {updatedResource.contractDetailsId.workingLocation}
                 </span>
-                <span className="w-[80px] inline-block mt-1 px-2 py-[2px] text-[12px] rounded border text-center">
-                  B3
-                </span>
+
+                {budgetLevelLoading ? (
+                  <span className="w-[100px] inline-block mt-1 px-2 py-[2px] text-[12px] rounded bg-[#FAB005] text-white text-center font-medium animate-pulse">
+                    Updating...
+                  </span>
+                ) : user?.role === "ADMIN" ? (
+                  <select
+                    value={updatedResource.demandBudgetId?.budgetLevel || "B3"}
+                    onChange={handleBudgetLevelChange}
+                    className="w-[100px] mt-1 pl-2 pr-6 py-[2px] text-[12px] rounded border text-center outline-none focus:border-[#5B6ACF] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-size-[10px] bg-position-[right_8px_center] bg-no-repeat"
+                  >
+                    <option value="Below B1">Below B1</option>
+                    <option value="B1">B1</option>
+                    <option value="B2">B2</option>
+                    <option value="B3">B3</option>
+                    <option value="Above B3">Above B3</option>
+                  </select>
+                ) : (
+                  <span className="w-[100px] inline-block mt-1 px-2 py-[2px] text-[12px] rounded border text-center">
+                    {updatedResource.demandBudgetId?.budgetLevel || "B3"}
+                  </span>
+                )}
               </div>
 
               {/* Profile */}
@@ -225,17 +280,19 @@ export default function ResouceComponents(props) {
                   </p>
 
                   {/* GREEN BUTTON */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowModal(true);
-                    }}
-                    className="inline-block mt-2 px-3 py-[4px] text-[12px] rounded bg-[#2F9E44] text-white cursor-pointer"
-                  >
-                    {getStartMessage(
-                      updatedResource.demandDurationId.billingStartDate
-                    )}
-                  </button>
+                  {user?.role === "HR" && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowModal(true);
+                      }}
+                      className="inline-block mt-2 px-3 py-[4px] text-[12px] rounded bg-[#2F9E44] text-white cursor-pointer"
+                    >
+                      {getStartMessage(
+                        updatedResource.demandDurationId.billingStartDate
+                      )}
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -250,15 +307,17 @@ export default function ResouceComponents(props) {
                   View KYC
                 </button>
               </Link>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowModal(true);
-                }}
-                className="px-3 py-1.5 text-[12px] font-medium text-white bg-[#5B6ACF] rounded hover:bg-[#4854c7] transition-colors"
-              >
-                Add Profiles
-              </button>
+              {user?.role === "HR" && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowModal(true);
+                  }}
+                  className="px-3 py-1.5 text-[12px] font-medium text-white bg-[#5B6ACF] rounded hover:bg-[#4854c7] transition-colors"
+                >
+                  Add Profiles
+                </button>
+              )}
             </div>
 
             {/* Footer */}
@@ -359,7 +418,7 @@ export default function ResouceComponents(props) {
           <ResumePopUp
             resumeUrl={resumeUrl}
             onClose={() => {
-              if (resumeUrl) URL.revokeObjectURL(resumeUrl); // 🧹 cleanup
+              if (resumeUrl) URL.revokeObjectURL(resumeUrl);
               setResumeUrl(null);
               setShowResumePopUp(false);
             }}

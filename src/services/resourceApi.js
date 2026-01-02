@@ -1,86 +1,5 @@
-// Base URL configuration
-import {resourceBaseURL} from "./mainBaseURLs"
-const API_BASE_URL = resourceBaseURL
-
-
-// const getAuthHeaders = () => {
-//   const token = localStorage.getItem('token');
-//   return {
-//     'Content-Type': 'application/json',
-//     authorization: token,
-//   };
-// };
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  console.log(token)
-  return {
-    'Content-Type': 'application/json',
-    authorization: token,
-  };
-};
-
-
- 
-const handleResponse = async (response) => {
-  const contentType = response.headers.get("content-type");
-
-  if (!response.ok) {
-    let errorData = {};
-
-    if (contentType && contentType.includes("application/json")) {
-      errorData = await response.json();
-    }
-
-    const error = new Error(
-      errorData.message || `HTTP error! status: ${response.status}`
-    );
-
-    error.status = response.status;
-    error.data = errorData;
-    throw error;
-  }
-
-  // If NO CONTENT (204)
-  if (response.status === 204) {
-    return null;
-  }
-
-  // If response has JSON
-  if (contentType && contentType.includes("application/json")) {
-    return response.json();
-  }
-
-  // Fallback (text response)
-  return null;
-};
-
-
-// Helper function to handle API errors
-const handleApiError = (error) => {
-  console.error('API Error:', {
-    status: error.status,
-    message: error.message,
-    data: error.data
-  });
-  
-  // Handle 401 specifically without auto-logout
-  if (error.status === 401) {
-    return {
-      success: false,
-      message: 'Session expired. Please login again.',
-      status: 401
-    };
-  }
-  
-  return {
-    success: false,
-    message: error.data?.message || error.message || 'API request failed',
-    status: error.status
-  };
-};
-
-
+import {API_RESOURCE_BASE_URL} from "./mainBaseURLs"
+import { getAuthHeaders, handleApiError, handleResponse } from "./apiHandleService"
 
 export const addResources = async (formData, l2File) => {
   const isL2 = formData.demandBudgetInfo.paymentConformation === "L2";
@@ -124,13 +43,11 @@ export const addResources = async (formData, l2File) => {
     },
   };
 
-  const res = await fetch(API_BASE_URL + "add-resource", {
+  const res = await fetch(`${API_RESOURCE_BASE_URL}add-resource`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
-//   const data=await res.json()
-// console.log('response',data.errors[0].message)
   if (!res.ok) {
      const errorData = await res.json();
        const errorMessage = errorData.errors[0].message|| "Add resource failed";
@@ -145,15 +62,10 @@ export const addResources = async (formData, l2File) => {
   return res.json();
 };
 
-
-
-
-
-
 export const getAllResource = async () => {
   console.log("Get all resource called")
   try {
-    const response = await fetch(`${API_BASE_URL}get-all-resource`, {
+    const response = await fetch(`${API_RESOURCE_BASE_URL}get-all-resource`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -171,7 +83,7 @@ export const getAllResource = async () => {
 
 export const getSingalResource = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}get-single-resource/${id}`, {
+    const response = await fetch(`${API_RESOURCE_BASE_URL}get-single-resource/${id}`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -189,7 +101,7 @@ export const getSingalResource = async (id) => {
 
 export const deleteSingalResource = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}delete-single-resource/${id}`, {
+    const response = await fetch(`${API_RESOURCE_BASE_URL}delete-single-resource/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });
@@ -206,17 +118,16 @@ export const deleteSingalResource = async (id) => {
   }
 };
 
-// Optional: Add a function for PATCH/PUT requests if needed
 export const updateResource = async (id, data) => {
   try {
-    const response = await fetch(`${API_BASE_URL}update-resource/${id}`, {
-      method: 'PATCH', // or 'PUT' depending on your API
+    const response = await fetch(`${API_RESOURCE_BASE_URL}update-resource/${id}`, {
+      method: 'PUT', 
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
     const responseData = await handleResponse(response);
-    
+  
     return {
       success: true,
       data: responseData,
@@ -227,7 +138,6 @@ export const updateResource = async (id, data) => {
   }
 };
 
-// Optional: Add file upload support if needed
 export const uploadFile = async (formData) => {
   try {
     const token = localStorage.getItem('token');
@@ -237,8 +147,7 @@ export const uploadFile = async (formData) => {
       headers['authorization'] = token;
     }
     
-    // Note: Don't set Content-Type for FormData - browser will set it automatically with boundary
-    const response = await fetch(`${API_BASE_URL}upload-file`, {
+    const response = await fetch(`${API_RESOURCE_BASE_URL}upload-file`, {
       method: 'POST',
       headers: headers,
       body: formData,
@@ -258,7 +167,7 @@ export const uploadFile = async (formData) => {
 
 export const getDashboardStats = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}get-dashboard-stats`, {
+    const response = await fetch(`${API_RESOURCE_BASE_URL}get-dashboard-stats`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });

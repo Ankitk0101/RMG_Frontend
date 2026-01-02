@@ -3,7 +3,7 @@ const API_BASE_URL = authBaseURl
 
 
 export const authService = {
-  // Send OTP API
+  
   async sendOtp(email) {
     try {
       const response = await fetch(`${API_BASE_URL}/get-OTP`, {
@@ -34,7 +34,6 @@ export const authService = {
     }
   },
 
-  // Verify OTP API - Need to send both user OTP and hash OTP 
   async verifyOtp(email, userOtp, hashOTP) {
     try {
       const response = await fetch(`${API_BASE_URL}/verify-OTP`, {
@@ -68,7 +67,6 @@ export const authService = {
     }
   },
 
-  // Login API
   async login(email, password) {
     console.log("login called",email ,password)
     try {
@@ -99,7 +97,6 @@ export const authService = {
     }
   },
 
-  // Register API - Need to include OTP verification data
   async register(userData) {
     console.log(userData)
     try {
@@ -138,7 +135,6 @@ export const authService = {
     }
   },
 
-  // Logout API
   async logout(token) {
     try {
       await fetch(`${API_BASE_URL}/logoutUser`, {
@@ -154,14 +150,11 @@ export const authService = {
     }
   },
 
-  // Verify token API
- // localhost:5000/api/authUser/
-
- async verifyToken(token) {
+  async verifyToken(token) {
   console.log('Verifying token:', token);
   try {
     const response = await fetch(`${API_BASE_URL}/authozied_user`, {
-      method: 'POST', // Changed to uppercase
+      method: 'POST', 
       headers: {
         'Content-Type': 'application/json',  
         authorization: `${token}` ,
@@ -178,7 +171,7 @@ export const authService = {
     
     return {
       success: true,
-      user: data.data || data.decoded || data.user // Handle different response formats
+      user: data.data || data.decoded || data.user 
     };
   } catch (error) {
     console.error('Token verification error:', error);

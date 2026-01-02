@@ -85,7 +85,6 @@ export default function IterationPage() {
               return (
                 <ResouceComponents
                   key={oneResource.id || index}
-                  index={index}
                   clientId={oneResource.clientId}
                   showClientId={showClientId}
                   oneResource={oneResource}

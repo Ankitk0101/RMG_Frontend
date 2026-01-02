@@ -1,5 +1,14 @@
 import React from "react";
 import { getResumeFile } from "../../services/resumeService";
+import { useAuth } from "../../context/AuthContext";
+
+const getInitials = (name) => {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 1).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 const getFilteredCandidateTimelineStatus = (candidate) => {
   const filteredStatus = candidate?.candidateStatusTimeline?.filter(
     (status) => {
@@ -37,9 +46,10 @@ export default function Lead({
   isStarted,
   isProfilesUpdating,
   setShowResumePopUp,
-  setResumeUrl, // ✅ ADD
+  setResumeUrl,
   handleUpdateStatus,
 }) {
+  const { user } = useAuth();
   if (isProfilesUpdating) {
     return (
       <p className="text-[14px] text-[#5B6ACF] animate-pulse">
@@ -68,7 +78,7 @@ export default function Lead({
                 <p className="text-[14px] font-medium mr-2">Lead {index + 1}</p>
                 {/* Status Circles */}
                 <div className="flex -space-x-1 ">
-                  {(filterdCanidateStatus ?? []).map((status, i) => {
+                  {(filterdCanidateStatus ?? []).map((status, index) => {
                     let statusColor;
                     if (status === "CV_Selected") statusColor = "bg-[#4C6EF5]";
                     else if (status === "Interview_Scheduled")
@@ -93,11 +103,14 @@ export default function Lead({
                     else statusColor = "bg-[#CED4DA]";
 
                     return (
-                      <div key={i} className="relative group">
+                      <div key={status} className="relative group">
                         <div
-                          className={`h-[20px] w-[20px] rounded-full text-white ${statusColor} border border-white ml-[5px] cursor-pointer`}
+                          className={`h-[22px] w-[22px] rounded-full text-white ${statusColor} border border-white ml-[5px] cursor-pointer text-[12px] flex items-center justify-center`}
                           title={status}
-                        />
+                        >
+                          {index === filterdCanidateStatus.length - 1 &&
+                            getInitials(candidate.candidateName)}
+                        </div>
                         {/* Tooltip Popup */}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-[#E5E5E5] rounded-lg shadow-xl p-4 hidden group-hover:block z-9999">
                           <div className="flex justify-between items-start mb-2">
@@ -161,26 +174,16 @@ export default function Lead({
                   })}
                 </div>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleUpdateStatus(
-                    candidate._id,
-                    candidate.candidateStatusTimeline
-                  );
-                }}
-                disabled={[
-                  "Rejected",
-                  "CV_Ignored",
-                  "CV_Rejected",
-                  "Written_Test_Rejected",
-                ].includes(
-                  candidate.candidateStatusTimeline?.[
-                    candidate.candidateStatusTimeline.length - 1
-                  ]
-                )}
-                className={`text-[12px] px-2 py-[4px] rounded border transition-all ${
-                  [
+              {user?.role === "HR" && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdateStatus(
+                      candidate._id,
+                      candidate.candidateStatusTimeline
+                    );
+                  }}
+                  disabled={[
                     "Rejected",
                     "CV_Ignored",
                     "CV_Rejected",
@@ -189,13 +192,25 @@ export default function Lead({
                     candidate.candidateStatusTimeline?.[
                       candidate.candidateStatusTimeline.length - 1
                     ]
-                  )
-                    ? "text-[#A6A6A6] border-[#D9D9D9] bg-[#F5F5F5] cursor-not-allowed opacity-60"
-                    : "text-[#6C6E70] border-[#6C6E70] hover:bg-[#F5F5F5] cursor-pointer"
-                }`}
-              >
-                Update Status
-              </button>
+                  )}
+                  className={`text-[12px] px-2 py-[4px] rounded border transition-all ${
+                    [
+                      "Rejected",
+                      "CV_Ignored",
+                      "CV_Rejected",
+                      "Written_Test_Rejected",
+                    ].includes(
+                      candidate.candidateStatusTimeline?.[
+                        candidate.candidateStatusTimeline.length - 1
+                      ]
+                    )
+                      ? "text-[#A6A6A6] border-[#D9D9D9] bg-[#F5F5F5] cursor-not-allowed opacity-60"
+                      : "text-[#6C6E70] border-[#6C6E70] hover:bg-[#F5F5F5] cursor-pointer"
+                  }`}
+                >
+                  Update Status
+                </button>
+              )}
             </div>
           );
         }
